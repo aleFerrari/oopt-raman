@@ -3,5 +3,6 @@
 @Author: Alessio Ferrari
 """
 
+
 def test_empty():
-  assert True
+    assert True
