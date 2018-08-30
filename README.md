@@ -7,8 +7,9 @@ The Raman solver is implemented solving the set of pump and probe ordirary diffe
 
 `oopt-raman` can be installed from the repository.
 ```sh
-$ git clone https://github.com/aleFerrari/oopt-raman.git
+$ git clone https://github.com/Telecominfraproject/oopt-raman.git
 $ cd oopt-raman
+$ git checkout develop
 $ python3 setup.py install
 ```
 
