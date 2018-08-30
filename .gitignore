@@ -1,1 +1,9 @@
-
+.cache/
+.idea/
+.pytest_cache/
+OOPT_Raman.egg-info/
+build/
+dist/
+raman/__pycache__/
+tests/__pycache__/
+examples/output/*
