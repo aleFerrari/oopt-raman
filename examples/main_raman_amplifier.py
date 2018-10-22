@@ -61,7 +61,6 @@ if __name__ == '__main__':
 
   # ODE SOLVER PARAMETERS
   z_resolution = 1e3
-  f_resolution = 400e9
   tolerance = 1e-8
   verbose = 2
 
@@ -91,8 +90,8 @@ if __name__ == '__main__':
   raman_pumps = raman_pump_information(raman_pumps=pumps)
 
   # SOLVER PARAMETERS
-  raman_solver_information = namedtuple('RamanSolverInformation', 'f_resolution z_resolution tolerance verbose')
-  solver_parameters = raman_solver_information(f_resolution=f_resolution, z_resolution=z_resolution, tolerance=tolerance, verbose=verbose)
+  raman_solver_information = namedtuple('RamanSolverInformation', 'z_resolution tolerance verbose')
+  solver_parameters = raman_solver_information(z_resolution=z_resolution, tolerance=tolerance, verbose=verbose)
 
   gain_loss_profile = main(fiber, spectrum, raman_pumps, solver_parameters)
 
@@ -135,6 +134,5 @@ if __name__ == '__main__':
   plt.xlabel('z [km]')
   plt.ylabel('Power [dBm]')
   plt.grid()
-
 
   plt.show()
