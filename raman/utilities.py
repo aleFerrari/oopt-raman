@@ -33,3 +33,29 @@ def compute_power_spectrum(spectral_information, raman_pump_information):
     propagation_direction = propagation_direction[ind]
 
     return pow_array, f_array, propagation_direction
+
+
+def raised_cosine_comb(f, *carriers):
+    """ Returns an array storing the PSD of a WDM comb of raised cosine shaped
+    channels at the input frequencies defined in array f
+
+    :param f: numpy array of frequencies in Hz
+    :param carriers: namedtuple describing the WDM comb
+    :return: PSD of the WDM comb evaluated over f
+    """
+    psd = np.zeros(np.shape(f))
+    for carrier in carriers:
+        f_nch = carrier.frequency
+        g_ch = carrier.power.signal / carrier.baud_rate
+        ts = 1 / carrier.baud_rate
+        passband = (1 - carrier.roll_off) / (2 / carrier.baud_rate)
+        stopband = (1 + carrier.roll_off) / (2 / carrier.baud_rate)
+        ff = np.abs(f - f_nch)
+        tf = ff - passband
+        if carrier.roll_off == 0:
+            psd = np.where(tf <= 0, g_ch, 0.) + psd
+        else:
+            psd = g_ch * (np.where(tf <= 0, 1., 0.) + 1 / 2 * (1 + np.cos(np.pi * ts / carrier.roll_off * tf)) *
+                          np.where(tf > 0, 1., 0.) * np.where(np.abs(ff) <= stopband, 1., 0.)) + psd
+
+    return psd
