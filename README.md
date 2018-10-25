@@ -9,6 +9,7 @@ The Raman solver is implemented solving the set of pump and probe ordirary diffe
 ```sh
 $ git clone https://github.com/Telecominfraproject/oopt-raman.git
 $ cd oopt-raman
+$ git checkout develop
 $ python3 setup.py install
 ```
 
@@ -24,7 +25,7 @@ Then you have to navigate to the example folder.
 $ cd /oopt-raman/examples
 ```
 
-Launch the examples
+Launch the example
 ```sh
 $ python3  main_raman_amplifier.py
 ```
