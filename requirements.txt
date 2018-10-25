@@ -1,9 +1,15 @@
 atomicwrites==1.1.5
 attrs==18.1.0
+cycler==0.10.0
+kiwisolver==1.0.1
+matplotlib==3.0.0
 more-itertools==4.3.0
 numpy==1.15.0
 pluggy==0.6.0
+progressbar==2.5
 py==1.5.4
+pyparsing==2.2.2
 pytest==3.6.3
+python-dateutil==2.7.3
 scipy==1.1.0
 six==1.11.0

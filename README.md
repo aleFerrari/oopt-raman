@@ -27,5 +27,5 @@ $ cd /oopt-raman/examples
 
 Launch the example
 ```sh
-$ python3  main_c_band_raman_amplifier.py
+$ python3  main_raman_amplifier.py
 ```

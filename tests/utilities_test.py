@@ -65,3 +65,27 @@ def test_compute_power_spectrum(num_channels):
     npt.assert_allclose(f_array_test, f_array, rtol=1e-6)
     npt.assert_allclose(propagation_direction_test, propagation_direction, rtol=1e-6)
 
+
+@pytest.mark.parametrize("roll_off", [0, 0.5])
+def test_raised_cosine_comb(roll_off):
+    # SPECTRAL PARAM
+    num_channels = 4
+    delta_f = 50e9
+    symbol_rate = 32e9
+    start_f = 193e12
+    pch = 1e-3
+
+    power = namedtuple('Power', 'signal nonlinear_interference amplified_spontaneous_emission')
+    channel = namedtuple('Channel', 'channel_number frequency baud_rate roll_off power')
+    carriers = tuple(channel(1 + ii, start_f + (delta_f * ii), symbol_rate, roll_off, power(pch, 0, 0))
+                     for ii in range(0, num_channels))
+
+    f_eval = np.array([start_f + (ii * delta_f / 2) for ii in range(0, num_channels * 2)])
+
+    psd = ut.raised_cosine_comb(f_eval, *carriers)
+
+    expected_psd = np.array([])
+    for ii in range(0, num_channels):
+        expected_psd = np.append(expected_psd, [pch / symbol_rate, 0])
+
+    npt.assert_allclose(expected_psd, psd, rtol=1e-5)
