@@ -112,14 +112,17 @@ if __name__ == '__main__':
 
     # COMPARISON WITH MATHLAB RESULTS
 
-    f_axis = (1E-12)*np.loadtxt(open('f_axis.csv','rb'),delimiter=',')
-    z_array = (1E-3)*np.loadtxt(open('z_array.csv','rb'),delimiter=',')
-    rho = np.loadtxt(open('raman_profile.csv',delimiter=','))
+    csv_files_dir = './resources/'
+
+    f_axis = (1E-12)*np.loadtxt(open(csv_files_dir+'f_axis.csv','rb'),delimiter=',')
+    z_array = (1E-3)*np.loadtxt(open(csv_files_dir+'z_array.csv','rb'),delimiter=',')
+    rho = np.loadtxt(open(csv_files_dir+'raman_profile.csv',delimiter=','))
 
     guard_band_indices = range(78, 83)
-    f_channel = np.delete((1E-12) * np.loadtxt(open('f_channel.csv', 'rb'), delimiter=','),guard_band_indices)
+    f_channel = np.delete((1E-12) * np.loadtxt(open(csv_files_dir+'f_channel.csv', 'rb'), delimiter=','),guard_band_indices)
     pch = 0.50119E-03*np.ones(len(f_channel))
     channel_numbers = range(len(f_channel))
+
 
     carriers = tuple(channel(i+1,f_channel[i],symbol_rate,roll_off,pch[i]) for i in channel_numbers)
     spectrum = spectral_information(carriers=carriers)
