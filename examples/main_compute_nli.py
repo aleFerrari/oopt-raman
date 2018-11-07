@@ -129,7 +129,7 @@ if __name__ == '__main__':
     carriers = tuple(channel(i+1,f_channel[i],symbol_rate,roll_off,pch[i]) for i in channel_numbers)
     spectrum = spectral_information(carriers=carriers)
     raman_solver.spectral_information = spectrum
-    raman_solver = namedtuple('Raman_solver',' rho z frequency ')
+    raman_solver = namedtuple('RamanSolver',' rho z frequency ')
     raman_solver._raman_bvp_solution.rho = rho
     raman_solver._raman_bvp_solution.z = z_array
     raman_solver._raman_bvp_solution.frequency = f_axis
