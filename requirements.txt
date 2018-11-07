@@ -1,8 +1,8 @@
-atomicwrites==1.1.5
+yesatomicwrites==1.1.5
 attrs==18.1.0
 cycler==0.10.0
 kiwisolver==1.0.1
-matplotlib==3.0.0
+matplocondatlib==3.0.0
 more-itertools==4.3.0
 numpy==1.15.0
 pluggy==0.6.0

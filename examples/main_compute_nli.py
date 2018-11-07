@@ -1,10 +1,8 @@
-import os
-import datetime
+
 import csv
 import numpy as np
 from collections import namedtuple
 from raman import nli
-import raman.utilities as ut
 import raman.raman as rm
 import matplotlib.pyplot as plt
 from operator import attrgetter
@@ -111,6 +109,24 @@ if __name__ == '__main__':
     raman_solver.spectral_information = spectrum
     raman_solver.raman_pump_information = raman_pumps
     raman_solver.solver_params = solver_parameters
+
+    # COMPARISON WITH MATHLAB RESULTS
+
+    f_axis = (1*E-12)*np.loadtxt(open('f_axis.csv','rb'),delimiter=',')
+    z_array = (1*E-3)*np.loadtxt(open('z_array.csv','rb'),delimiter=',')
+    rho = np.loadtxt(open('raman_profile.csv',delimiter=','))
+
+    guard_band_indices = range(78, 83)
+    f_channel = np.delete((1 * E - 12) * np.loadtxt(open('f_channel.csv', 'rb'), delimiter=','),guard_band_indices)
+    pch = 0.50119E-03*np.ones(len(f_channel))
+    channel_numbers = range(len(f_channel))
+
+    carriers = tuple(channel(i+1,f_channel[i],symbol_rate,roll_off,pch[i]) for i in channel_numbers)
+    spectrum = spectral_information(carriers=carriers)
+    raman_solver.spectral_information = spectrum
+    raman_solver._raman_bvp_solution.rho = rho
+    raman_solver._raman_bvp_solution.z = z_array
+    raman_solver._raman_bvp_solution.frequeency = f_axis
 
     carriers_nli = main(fiber, spectrum, raman_solver, model_params)
 
