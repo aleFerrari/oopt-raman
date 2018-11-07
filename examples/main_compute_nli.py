@@ -8,6 +8,8 @@ import matplotlib.pyplot as plt
 from operator import attrgetter
 from scipy.interpolate import interp1d
 
+cut_index = [5,23,40,57,73,84,102,120,138,156];
+
 def raman_gain_efficiency_from_csv(csv_file_name):
     with open(csv_file_name) as csv_file:
         cr_data = csv.reader(csv_file, delimiter=',')
@@ -25,7 +27,6 @@ def main(fiber_information, spectral_information, raman_solver, model_params):
     nlint = nli.NLI(fiber_information=fiber_information)
     nlint.srs_profile = raman_solver
     nlint.model_parameters = model_params
-    cut_index = [5,23,40,57,73,84,102,120,138,156];
 
 
     carriers_nli = [nlint.compute_nli(carrier, *spectral_information.carriers)
@@ -137,7 +138,7 @@ if __name__ == '__main__':
     carriers_nli = main(fiber, spectrum, raman_solver, model_params)
 
     # PLOT RESULTS
-    p_cut = [carrier.power.signal for carrier in sorted(spectrum.carriers, key=attrgetter('frequency'))]
+    p_cut = [carrier.power.signal for carrier in sorted(spectrum.carriers, key=attrgetter('frequency')) if (carrier.channel_number in cut_index)]
     f_cut = [carrier.frequency for carrier in sorted(spectrum.carriers, key=attrgetter('frequency'))]
 
     rho_end = interp1d(raman_solver.raman_bvp_solution.frequency, raman_solver.raman_bvp_solution.rho[:,-1])
