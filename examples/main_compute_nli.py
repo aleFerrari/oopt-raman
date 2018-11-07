@@ -129,11 +129,11 @@ if __name__ == '__main__':
     carriers = tuple(channel(i+1,f_channel[i],symbol_rate,roll_off,pch[i]) for i in channel_numbers)
     spectrum = spectral_information(carriers=carriers)
     raman_solver.spectral_information = spectrum
-    raman_solver = namedtuple('RamanSolver','_raman_bvp_solution')
-    _raman_bvp_solution = namedtuple('_raman_bvp_solution',' rho z frequency ')
-    raman_bvp_solution = _raman_bvp_solution(rho=rho,z=z_array,frequency=f_axis)
-    raman_solver = raman_solver(raman_bvp_solution)
-    
+    raman_solver = namedtuple('RamanSolver','raman_bvp_solution')
+    raman_bvp_solution = namedtuple('raman_bvp_solution',' rho z frequency ')
+    raman_bvp_solution = raman_bvp_solution(rho=rho,z=z_array,frequency=f_axis)
+    raman_solver = raman_solver(raman_bvp_solution=raman_bvp_solution)
+
     carriers_nli = main(fiber, spectrum, raman_solver, model_params)
 
     # PLOT RESULTS
