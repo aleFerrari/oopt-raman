@@ -25,9 +25,11 @@ def main(fiber_information, spectral_information, raman_solver, model_params):
     nlint = nli.NLI(fiber_information=fiber_information)
     nlint.srs_profile = raman_solver
     nlint.model_parameters = model_params
+    cut_index = [5,23,40,57,73,84,102,120,138,156];
+
 
     carriers_nli = [nlint.compute_nli(carrier, *spectral_information.carriers)
-                    for carrier in spectral_information.carriers]
+                    for carrier in spectral_information.carriers if (carrier.channel_number in cut_index)]
 
     return carriers_nli
 
@@ -38,13 +40,13 @@ if __name__ == '__main__':
     cr_file_name = './raman_gain_efficiency/SSMF.csv'
     cr, frequency_cr = raman_gain_efficiency_from_csv(cr_file_name)
 
-    fiber_length = np.array([100e3])
-    attenuation_coefficient_p = np.array([0.046e-3])
+    fiber_length = np.array([80e3])
+    attenuation_coefficient_p = np.array([0.18895e-3])
     frequency_attenuation = np.array([193.5e12])
 
-    gamma = 1.27e-3     # 1/W/m
-    beta2 = 21.27e-27   # s^2/m
-    beta3 = 0.0344e-39   # s^3/m
+    gamma = 1.3e-3     # 1/W/m
+    beta2 = -21.27e-27   # s^2/m
+    beta3 = 0  # s^3/m
 
     # WDM COMB PARAMETERS
     num_channels = 91
@@ -116,7 +118,7 @@ if __name__ == '__main__':
 
     f_axis = (1E-12)*np.loadtxt(open(csv_files_dir+'f_axis.csv','rb'),delimiter=',')
     z_array = (1E-3)*np.loadtxt(open(csv_files_dir+'z_array.csv','rb'),delimiter=',')
-    rho = np.loadtxt(open(csv_files_dir+'raman_profile.csv',delimiter=','))
+    rho = np.loadtxt(open(csv_files_dir+'raman_profile.csv'),delimiter=',')
 
     guard_band_indices = range(78, 83)
     f_channel = np.delete((1E-12) * np.loadtxt(open(csv_files_dir+'f_channel.csv', 'rb'), delimiter=','),guard_band_indices)
