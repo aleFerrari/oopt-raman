@@ -42,7 +42,7 @@ if __name__ == '__main__':
     cr, frequency_cr = raman_gain_efficiency_from_csv(cr_file_name)
 
     fiber_length = np.array([80e3])
-    attenuation_coefficient_p = np.array([0.18895e-3])
+    attenuation_coefficient_p = np.array([np.log(10)*0.18895E-3/20])
     frequency_attenuation = np.array([193.5e12])
 
     gamma = 1.3e-3     # 1/W/m
