@@ -42,7 +42,7 @@ if __name__ == '__main__':
     cr, frequency_cr = raman_gain_efficiency_from_csv(cr_file_name)
 
     fiber_length = np.array([80e3])
-    attenuation_coefficient_p = np.array([np.log(10)*0.18895E-3/20])
+    attenuation_coefficient_p = np.array([np.log(10)*0.18895E-3/10])
     frequency_attenuation = np.array([193.5e12])
 
     gamma = 1.3e-3     # 1/W/m
@@ -69,7 +69,7 @@ if __name__ == '__main__':
     verbose_raman = 2
 
     # NLI PARAMETERS
-    f_resolution_nli = 2e9
+    f_resolution_nli = 1e9
     verbose_nli = 1
     method_nli = 'ggn_integral'
 
@@ -144,13 +144,13 @@ if __name__ == '__main__':
     p_cut = [carrier.power.signal for carrier in sorted(spectrum.carriers, key=attrgetter('frequency')) if (carrier.channel_number in cut_index)]
     f_cut = [carrier.frequency for carrier in sorted(spectrum.carriers, key=attrgetter('frequency')) if (carrier.channel_number in cut_index)]
 
-    rho_end = interp1d(raman_solver.raman_bvp_solution.frequency, raman_solver.raman_bvp_solution.rho[:,-1]*A[-1])
+    rho_end = interp1d(raman_solver.raman_bvp_solution.frequency, raman_solver.raman_bvp_solution.rho[:,-1]/A[-1])
     p_cut = np.array(p_cut) * (rho_end(f_cut))**2
 
     snr_nl = p_cut / carriers_nli
 
-    np.save('snr',snr_nl)
-    np.save('carriers_nli',np.array(carriers_nli))
+    np.save('snr_2',snr_nl)
+    np.save('carriers_nli_2',np.array(carriers_nli))
 
     fig1 = plt.figure()
     plt.plot(f_cut, 10*np.log10(p_cut)+30, '*')
