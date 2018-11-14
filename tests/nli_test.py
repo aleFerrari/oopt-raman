@@ -47,3 +47,44 @@ def test_nli_parameters():
 
     assert nli_model.nli_parameters.frequency_resolution == frequency_resolution
     assert nli_model.nli_parameters.verbose == verbose
+
+@pytest.mark.parametrize("delta_beta, x_talk", [(3,1E-3),(1E+3,-1E-3),(1E-3,0),(1E-3,-1E-3),(0,1E-3),(1E-3,-1E-4)])
+def test_nli_fwm_efficiency(delta_beta,x_talk):
+
+    NLI = nli.NLI
+
+    z = np.arange(0,81E+3,1E+3)
+    delta_rho = np.array([np.exp(x_talk*z)])
+    alpha0 = 1E-20*np.log(10)*0.18895E-3/10
+
+    def exp_integral(z,w):
+        integral = (np.exp(w*z[-1])-np.exp(w*z[0]))/w
+        return integral
+
+    expected = np.array([np.abs(exp_integral(z,(1j*delta_beta-alpha0+x_talk)))**2])
+    calculed = NLI._fwm_efficiency(delta_beta, delta_rho, z, alpha0)
+
+    npt.assert_allclose(calculed,expected,rtol=1E-5)
+
+    delta_rho = np.array([x_talk * z])
+
+    def linear_integral(z,w,x_talk):
+        total = x_talk*(z[-1]*np.exp(w*z[-1])-z[0]*np.exp(w*z[0]))/w
+        derivate = x_talk*(np.exp(w*z[-1])-np.exp(w*z[0]))/(w**2)
+
+        return total + derivate
+
+    expected = np.array([np.abs(linear_integral(z, (1j * delta_beta - alpha0),x_talk)) ** 2])
+    calculed = NLI._fwm_efficiency(delta_beta, delta_rho, z, alpha0)
+
+    #npt.assert_allclose(calculed, expected, rtol=1E-3)
+
+
+
+
+
+
+
+
+
+
