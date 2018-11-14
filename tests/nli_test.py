@@ -48,36 +48,42 @@ def test_nli_parameters():
     assert nli_model.nli_parameters.frequency_resolution == frequency_resolution
     assert nli_model.nli_parameters.verbose == verbose
 
-@pytest.mark.parametrize("delta_beta, x_talk", [(3,1E-3),(1E+3,-1E-3),(1E-3,0),(1E-3,-1E-3),(0,1E-3),(1E-3,-1E-4)])
-def test_nli_fwm_efficiency(delta_beta,x_talk):
+@pytest.mark.parametrize("delta_beta, x_talk, delta_rho_fun", [(3,[1E-3, 1],"linear"),(1E+3,[-1E-3,0],"linear"),(1E-3,[-1E-3,0],"exponential")])#,(0,1E-3,"exponential"),(1E-3,-1E-4,"exponential")])
+def test_nli_fwm_efficiency(delta_beta,x_talk,delta_rho_fun):
 
     NLI = nli.NLI
 
-    z = np.arange(0,81E+3,1E+3)
-    delta_rho = np.array([np.exp(x_talk*z)])
+    z = np.arange(0,81E+3,1)
     alpha0 = 1E-20*np.log(10)*0.18895E-3/10
+    w = 1j*delta_beta-alpha0
 
-    def exp_integral(z,w):
-        integral = (np.exp(w*z[-1])-np.exp(w*z[0]))/w
-        return integral
+    def evaluate(vec):
+        return vec[-1]-vec[0]
 
-    expected = np.array([np.abs(exp_integral(z,(1j*delta_beta-alpha0+x_talk)))**2])
-    calculed = NLI._fwm_efficiency(delta_beta, delta_rho, z, alpha0)
+    delta_rho=0
+    der_delta_rho=0
+    expected=0
+    exponential=np.exp(w*z)
+    int_exponential = exponential/w
 
-    #npt.assert_allclose(calculed,expected,rtol=1E-5)
 
-    delta_rho = np.array([x_talk * z])
 
-    def linear_integral(z,w,x_talk):
-        total = x_talk*(z[-1]*np.exp(w*z[-1])-z[0]*np.exp(w*z[0]))/w
-        derivate = x_talk*(np.exp(w*z[-1])-np.exp(w*z[0]))/(w**2)
+    if delta_rho_fun == "linear":
+        delta_rho = x_talk[0]*z+x_talk[1]*np.ones(len(z))
+        der_delta_rho = x_talk[0]*np.ones(len(z))
+        total = int_exponential*delta_rho
+        other = - int_exponential*der_delta_rho/w
+        expected = np.array([np.abs(evaluate(total+other))**2])
 
-        return total + derivate
+    elif delta_rho_fun == "exponential":
+        delta_rho = np.exp(x_talk[0]*z)
+        exponential = np.exp((w+x_talk[0])*z)
+        int_exponential = exponential / (w+x_talk[0])
+        expected=np.array([np.abs(evaluate(int_exponential))**2])
 
-    expected = np.array([np.abs(linear_integral(z, (1j * delta_beta - alpha0),x_talk)) ** 2])
-    calculed = NLI._fwm_efficiency(delta_beta, delta_rho, z, alpha0)
+    calculed = NLI._fwm_efficiency(delta_beta, np.array([delta_rho]), z, alpha0)
 
-    #npt.assert_allclose(calculed, expected, rtol=1E-3)
+    npt.assert_allclose(calculed,expected,rtol=1E-5)
 
 
 
