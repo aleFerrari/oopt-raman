@@ -94,7 +94,7 @@ class NLI:
         z = self.srs_profile.raman_bvp_solution.z
         frequency_rho = self.srs_profile.raman_bvp_solution.frequency
         rho = self.srs_profile.raman_bvp_solution.rho
-        rho = rho * np.exp(np.abs(alpha0) * z / 2)
+        rho = rho * np.exp(alpha0 * z / 2)
 
 
 
@@ -158,7 +158,6 @@ class NLI:
         """ Computes the four-wave mixing efficiency
         """
         w = 1j*delta_beta - alpha0
-        #fwm_eff = 0
         fwm_eff = (delta_rho[:,-1]*np.exp(w*z[-1])-delta_rho[:,0]*np.exp(w*z[0]))/w
         for z_ind in range(0, len(z) - 1):
             derivative_rho = (delta_rho[:, z_ind + 1] - delta_rho[:, z_ind]) / (z[z_ind + 1] - z[z_ind])
