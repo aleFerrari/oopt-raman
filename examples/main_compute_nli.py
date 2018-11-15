@@ -144,7 +144,7 @@ if __name__ == '__main__':
     p_cut = [carrier.power.signal for carrier in sorted(spectrum.carriers, key=attrgetter('frequency')) if (carrier.channel_number in cut_index)]
     f_cut = [carrier.frequency for carrier in sorted(spectrum.carriers, key=attrgetter('frequency')) if (carrier.channel_number in cut_index)]
 
-    rho_end = interp1d(raman_solver.raman_bvp_solution.frequency, raman_solver.raman_bvp_solution.rho[:,-1]/A[-1])
+    rho_end = interp1d(raman_solver.raman_bvp_solution.frequency, raman_solver.raman_bvp_solution.rho[:,-1])
     p_cut = np.array(p_cut) * (rho_end(f_cut))**2
 
     snr_nl = p_cut / carriers_nli
