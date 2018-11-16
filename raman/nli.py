@@ -94,7 +94,7 @@ class NLI:
         z = self.srs_profile.raman_bvp_solution.z
         frequency_rho = self.srs_profile.raman_bvp_solution.frequency
         rho = self.srs_profile.raman_bvp_solution.rho
-        rho = rho * np.exp(alpha0 * z / 2)
+        rho = rho * np.exp(np.abs(alpha0) * z / 2)
 
 
 
@@ -146,7 +146,7 @@ class NLI:
             if self.model_parameters.verbose:
                 bar.update(f_ind)
 
-        gnli = 16.0 / 27.0 * gamma ** 2 * rho_f[-1] ** 2 * np.exp(-alpha0 * z[-1]) * \
+        gnli = 16.0 / 27.0 * gamma ** 2 * rho_f[-1] ** 2 * np.exp(-np.abs(alpha0) * z[-1]) * \
                np.trapz(integrand_f1, f1_array)  # compute outer integral
 
         carrier_nli = carrier.baud_rate * gnli
