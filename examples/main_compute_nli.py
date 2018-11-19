@@ -126,7 +126,7 @@ if __name__ == '__main__':
 
     guard_band_indices = range(78, 83)
     f_channel = (1E+12)*np.loadtxt(open(csv_files_dir+'f_axis.csv','rb'),delimiter=',')
-    f_channel = f_channel(range(10,20))
+    f_channel = f_channel[[x for x in range(10,20)]]
     print(f_channel)
     pch = 0.50119E-03*np.ones(len(f_channel))
     channel_numbers = range(len(f_channel))
