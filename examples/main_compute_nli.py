@@ -8,7 +8,7 @@ import matplotlib.pyplot as plt
 from operator import attrgetter
 from scipy.interpolate import interp1d
 
-cut_index = [5,23,40,57,73,84,102,120,138,156];
+cut_index = range(1,11);
 
 def raman_gain_efficiency_from_csv(csv_file_name):
     with open(csv_file_name) as csv_file:
