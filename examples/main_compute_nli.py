@@ -125,7 +125,7 @@ if __name__ == '__main__':
         rho[i] = np.multiply(rho[i], A)
 
     guard_band_indices = range(78, 83)
-    f_channel = np.delete((1E+12) * np.loadtxt(open(csv_files_dir+'f_channel.csv', 'rb'), delimiter=','),guard_band_indices)
+    f_channel = np.array(range(18770,18820,5))/100
     pch = 0.50119E-03*np.ones(len(f_channel))
     channel_numbers = range(len(f_channel))
 
