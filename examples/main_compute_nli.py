@@ -4,11 +4,11 @@ import numpy as np
 from collections import namedtuple
 from raman import nli
 import raman.raman as rm
-import matplotlib.pyplot as plt
+#import matplotlib.pyplot as plt
 from operator import attrgetter
 from scipy.interpolate import interp1d
 
-cut_index = [x for x in range(10,21)];
+cut_index = [x for x in range(1,11)];
 
 def raman_gain_efficiency_from_csv(csv_file_name):
     with open(csv_file_name) as csv_file:
