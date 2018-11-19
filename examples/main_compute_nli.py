@@ -117,7 +117,7 @@ if __name__ == '__main__':
 
     csv_files_dir = './resources/'
 
-    f_axis = (1E+12)*np.loadtxt(open(csv_files_dir+'f_axis.csv','rb'),delimiter=',')
+    f_axis =np.array(range(18770,18820,5))/100
     z_array = (1E+3)*np.loadtxt(open(csv_files_dir+'z_array.csv','rb'),delimiter=',')
     rho = np.loadtxt(open(csv_files_dir+'raman_profile.csv'),delimiter=',')
     A = np.exp((-attenuation_coefficient_p / 2) * z_array)
