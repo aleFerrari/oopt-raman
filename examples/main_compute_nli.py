@@ -119,13 +119,15 @@ if __name__ == '__main__':
 
     f_axis = (1E+12)*np.loadtxt(open(csv_files_dir+'f_axis.csv','rb'),delimiter=',')
     z_array = (1E+3)*np.loadtxt(open(csv_files_dir+'z_array.csv','rb'),delimiter=',')
+    f_axis = np.array([187.7000, 187.7500, 187.8000, 187.8500, 187.9000, 187.9500, 188.0000, 188.0500, 188.1000, 188.1500])
+    z_array = (1E+3) * np.array(range(81))
     rho = np.loadtxt(open(csv_files_dir+'raman_profile.csv'),delimiter=',')
     A = np.exp((-attenuation_coefficient_p / 2) * z_array)
     for i in range(len(rho)):
         rho[i] = np.multiply(rho[i], A)
 
     guard_band_indices = range(78, 83)
-    f_channel = np.delete((1E+12) * np.loadtxt(open(csv_files_dir+'f_channel.csv', 'rb'), delimiter=','),guard_band_indices)
+    f_channel = f_axis
     pch = 0.50119E-03*np.ones(len(f_channel))
     channel_numbers = range(len(f_channel))
 

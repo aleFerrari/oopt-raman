@@ -7,7 +7,7 @@ from numpy import testing as npt
 import pytest
 from raman import nli
 from collections import namedtuple
-
+import raman.raman as rm
 
 def test_nli_fiber_information():
     fiber_length = np.array([80e3])
@@ -84,7 +84,6 @@ def test_nli_fwm_efficiency(delta_beta,x_talk,delta_rho_fun):
     calculed = NLI._fwm_efficiency(delta_beta, np.array([delta_rho]), z, alpha0)
 
     npt.assert_allclose(calculed,expected,rtol=1E-5)
-
 
 
 
