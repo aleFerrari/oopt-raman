@@ -125,7 +125,7 @@ if __name__ == '__main__':
         rho[i] = np.multiply(rho[i], A)
 
     guard_band_indices = range(78, 83)
-    f_channel = f_axis[cut_index]
+    f_channel = (1E10)*np.array(range(18815,18870,5))
     pch = 0.50119E-03*np.ones(len(f_channel))
     channel_numbers = range(len(f_channel))
 
