@@ -4,7 +4,7 @@ import numpy as np
 from collections import namedtuple
 from raman import nli
 import raman.raman as rm
-#import matplotlib.pyplot as plt
+import matplotlib.pyplot as plt
 from operator import attrgetter
 from scipy.interpolate import interp1d
 

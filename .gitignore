@@ -7,5 +7,7 @@ dist/
 raman/__pycache__/
 tests/__pycache__/
 examples/output/*
+example/resources/*
 venv/
+
 
