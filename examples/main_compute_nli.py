@@ -4,11 +4,11 @@ import numpy as np
 from collections import namedtuple
 from raman import nli
 import raman.raman as rm
-import matplotlib.pyplot as plt
+#import matplotlib.pyplot as plt
 from operator import attrgetter
 from scipy.interpolate import interp1d
 
-cut_index = [x for x in range(1,11)];
+cut_index = [x for x in range(1,12)]
 
 def raman_gain_efficiency_from_csv(csv_file_name):
     with open(csv_file_name) as csv_file:
@@ -120,13 +120,19 @@ if __name__ == '__main__':
     f_axis = (1E+12)*np.loadtxt(open(csv_files_dir+'f_axis.csv','rb'),delimiter=',')
     z_array = (1E+3)*np.loadtxt(open(csv_files_dir+'z_array.csv','rb'),delimiter=',')
     rho = np.loadtxt(open(csv_files_dir+'raman_profile.csv'),delimiter=',')
+    #s=[len(rho),len(rho[0])]
+    #rho=np.ones(s)
+    #e = [3 * x for x in range(1, len(rho) + 1)]
+    #v = np.exp(e)
+    #rho=np.transpose(np.transpose(rho)*np.transpose(v))
+
     A = np.exp((-attenuation_coefficient_p / 2) * z_array)
     for i in range(len(rho)):
         rho[i] = np.multiply(rho[i], A)
 
     guard_band_indices = range(78, 83)
     f_channel = (1E+12)*np.loadtxt(open(csv_files_dir+'f_channel.csv','rb'),delimiter=',')
-    f_channel = f_channel[[x for x in range(9,20)]]
+    f_channel = f_channel[[x for x in range(11)]]
     print(f_channel)
     pch = 0.50119E-03*np.ones(len(f_channel))
     channel_numbers = range(len(f_channel))
@@ -151,20 +157,22 @@ if __name__ == '__main__':
 
     snr_nl = p_cut / carriers_nli
 
+    print(snr_nl)
+
     np.save('snr_2',snr_nl)
     np.save('carriers_nli_2',np.array(carriers_nli))
 
-    fig1 = plt.figure()
-    plt.plot(f_cut, 10*np.log10(p_cut)+30, '*')
-    plt.plot(f_cut, 10*np.log10(carriers_nli)+30, '*')
-    plt.xlabel('Frequency [Hz]')
-    plt.ylabel('Power [dBm]')
-    plt.grid()
-
-    fig2 = plt.figure()
-    plt.plot(f_cut, 10*np.log10(snr_nl), '-o')
-    plt.xlabel('Frequency [Hz]')
-    plt.ylabel(r'$SNR_{NL}$ [dB]')
-    plt.grid()
-
-    plt.show()
+    #fig1 = plt.figure()
+    #plt.plot(f_cut, 10*np.log10(p_cut)+30, '*')
+    #plt.plot(f_cut, 10*np.log10(carriers_nli)+30, '*')
+    #plt.xlabel('Frequency [Hz]')
+    # plt.ylabel('Power [dBm]')
+    # plt.grid()
+    #
+    # fig2 = plt.figure()
+    # plt.plot(f_cut, 10*np.log10(snr_nl), '-o')
+    # plt.xlabel('Frequency [Hz]')
+    # plt.ylabel(r'$SNR_{NL}$ [dB]')
+    # plt.grid()
+    #
+    # plt.show()
