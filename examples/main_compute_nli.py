@@ -8,7 +8,6 @@ import matplotlib.pyplot as plt
 from operator import attrgetter
 from scipy.interpolate import interp1d
 
-cut_index = [x for x in range(1,52)]
 
 def raman_gain_efficiency_from_csv(csv_file_name):
     with open(csv_file_name) as csv_file:
@@ -127,10 +126,14 @@ if __name__ == '__main__':
 
     guard_band_indices = range(78, 83)
     f_channel = (1E+12)*np.loadtxt(open(csv_files_dir+'f_channel.csv','rb'),delimiter=',')
-    f_channel = f_channel[[x for x in range(51)]]
-    print(f_channel)
-    pch = 0.50119E-03*np.ones(len(f_channel))
-    channel_numbers = range(len(f_channel))
+    l=len(f_channel)
+    if l%2 == 0:
+        l = l - 1
+        f_channel = f_channel[:l]
+    cut_index = [*range(4, l, 20)]
+
+    pch = 0.50119E-03*np.ones(l)
+    channel_numbers = range(l)
 
 
     carriers = tuple(channel(i+1,f_channel[i],symbol_rate,roll_off,power(pch[i],0,0)) for i in channel_numbers)
