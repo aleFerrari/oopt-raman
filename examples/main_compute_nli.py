@@ -155,10 +155,7 @@ if __name__ == '__main__':
 
     snr_nl = p_cut / carriers_nli
 
-    print(snr_nl)
-
-    np.save('snr',snr_nl)
-    np.save('carriers_nli',np.array(carriers_nli))
+    OSNR_NL = np.loadtxt(open(csv_files_dir+'OSNR_NL.csv','rb'),delimiter=',')
 
     fig1 = plt.figure()
     plt.plot(f_cut, 10*np.log10(p_cut)+30, '*')
