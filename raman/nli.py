@@ -91,9 +91,9 @@ class NLI:
                                     self.fiber_information.attenuation_coefficient.alpha_power)
             alpha0 = alpha_interp(f_eval)
 
-        z = self.srs_profile.raman_bvp_solution.z
-        frequency_rho = self.srs_profile.raman_bvp_solution.frequency
-        rho = self.srs_profile.raman_bvp_solution.rho
+        z = self.srs_profile.stimulated_raman_scattering.z
+        frequency_rho = self.srs_profile.stimulated_raman_scattering.frequency
+        rho = self.srs_profile.stimulated_raman_scattering.rho
         rho = rho * np.exp(np.abs(alpha0) * z / 2)
 
 

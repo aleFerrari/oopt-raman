@@ -1,13 +1,14 @@
-
+import os
+import datetime
 import csv
 import numpy as np
 from collections import namedtuple
 from raman import nli
+import raman.utilities as ut
 import raman.raman as rm
 import matplotlib.pyplot as plt
 from operator import attrgetter
 from scipy.interpolate import interp1d
-
 
 def raman_gain_efficiency_from_csv(csv_file_name):
     with open(csv_file_name) as csv_file:
@@ -27,9 +28,8 @@ def main(fiber_information, spectral_information, raman_solver, model_params):
     nlint.srs_profile = raman_solver
     nlint.model_parameters = model_params
 
-
     carriers_nli = [nlint.compute_nli(carrier, *spectral_information.carriers)
-                    for carrier in spectral_information.carriers if (carrier.channel_number in cut_index)]
+                    for carrier in spectral_information.carriers]
 
     return carriers_nli
 
@@ -40,13 +40,13 @@ if __name__ == '__main__':
     cr_file_name = './raman_gain_efficiency/SSMF.csv'
     cr, frequency_cr = raman_gain_efficiency_from_csv(cr_file_name)
 
-    fiber_length = np.array([80e3])
-    attenuation_coefficient_p = np.array([np.log(10)*0.18895E-3/10])
+    fiber_length = np.array([100e3])
+    attenuation_coefficient_p = np.array([0.046e-3])
     frequency_attenuation = np.array([193.5e12])
 
-    gamma = 1.3e-3     # 1/W/m
-    beta2 = -21.27e-27   # s^2/m
-    beta3 = 0  # s^3/m
+    gamma = 1.27e-3     # 1/W/m
+    beta2 = 21.27e-27   # s^2/m
+    beta3 = 0.0344e-39   # s^3/m
 
     # WDM COMB PARAMETERS
     num_channels = 91
@@ -59,6 +59,7 @@ if __name__ == '__main__':
     # RAMAN PUMP PARAMETERS
     pump_pow = [150e-3, 250e-3, 150e-3, 250e-3, 200e-3]
     pump_freq = [200.2670e12, 201.6129e12, 207.1823e12, 208.6231e12, 210.0840e12]
+    pump_bandwidth = [1e6, 1e6, 1e6, 1e6, 1e6]
     prop_direction = [-1, -1, -1, -1, -1]
     num_pumps = len(pump_pow)
 
@@ -68,7 +69,7 @@ if __name__ == '__main__':
     verbose_raman = 2
 
     # NLI PARAMETERS
-    f_resolution_nli = 1e9
+    f_resolution_nli = 2e9
     verbose_nli = 1
     method_nli = 'ggn_integral'
 
@@ -93,8 +94,8 @@ if __name__ == '__main__':
 
     # RAMAN PUMPS
     raman_pump_information = namedtuple('SpectralInformation', 'raman_pumps')
-    pump = namedtuple('RamanPump', 'pump_number power frequency propagation_direction')
-    pumps = tuple(pump(1 + ii, pump_pow[ii], pump_freq[ii], prop_direction[ii])
+    pump = namedtuple('RamanPump', 'pump_number power frequency propagation_direction pump_bandwidth')
+    pumps = tuple(pump(1 + ii, pump_pow[ii], pump_freq[ii], prop_direction[ii], pump_bandwidth[ii])
                   for ii in range(0, num_pumps))
     raman_pumps = raman_pump_information(raman_pumps=pumps)
 
@@ -112,50 +113,16 @@ if __name__ == '__main__':
     raman_solver.raman_pump_information = raman_pumps
     raman_solver.solver_params = solver_parameters
 
-    # COMPARISON WITH MATHLAB RESULTS
-
-    csv_files_dir = './resources/'
-
-    f_axis = (1E+12)*np.loadtxt(open(csv_files_dir+'f_axis.csv','rb'),delimiter=',')
-    z_array = (1E+3)*np.loadtxt(open(csv_files_dir+'z_array.csv','rb'),delimiter=',')
-    rho = np.loadtxt(open(csv_files_dir+'raman_profile.csv'),delimiter=',')
-
-    A = np.exp((-attenuation_coefficient_p / 2) * z_array)
-    for i in range(len(rho)):
-        rho[i] = np.multiply(rho[i], A)
-
-    guard_band_indices = range(78, 83)
-    f_channel = (1E+12)*np.loadtxt(open(csv_files_dir+'f_channel.csv','rb'),delimiter=',')
-    l=len(f_channel)
-    if l%2 == 0:
-        l = l - 1
-        f_channel = f_channel[:l]
-    cut_index = [*range(4, l, 20)]
-
-    pch = 0.50119E-03*np.ones(l)
-    channel_numbers = range(l)
-
-
-    carriers = tuple(channel(i+1,f_channel[i],symbol_rate,roll_off,power(pch[i],0,0)) for i in channel_numbers)
-    spectrum = spectral_information(carriers=carriers)
-    raman_solver.spectral_information = spectrum
-    raman_solver = namedtuple('RamanSolver','raman_bvp_solution spectral_information')
-    raman_bvp_solution = namedtuple('raman_bvp_solution',' rho z frequency ')
-    raman_bvp_solution = raman_bvp_solution(rho=rho,z=z_array,frequency=f_axis)
-    raman_solver = raman_solver(raman_bvp_solution=raman_bvp_solution,spectral_information=spectrum)
-
     carriers_nli = main(fiber, spectrum, raman_solver, model_params)
 
     # PLOT RESULTS
-    p_cut = [carrier.power.signal for carrier in sorted(spectrum.carriers, key=attrgetter('frequency')) if (carrier.channel_number in cut_index)]
-    f_cut = [carrier.frequency for carrier in sorted(spectrum.carriers, key=attrgetter('frequency')) if (carrier.channel_number in cut_index)]
+    p_cut = [carrier.power.signal for carrier in sorted(spectrum.carriers, key=attrgetter('frequency'))]
+    f_cut = [carrier.frequency for carrier in sorted(spectrum.carriers, key=attrgetter('frequency'))]
 
-    rho_end = interp1d(raman_solver.raman_bvp_solution.frequency, raman_solver.raman_bvp_solution.rho[:,-1])
+    rho_end = interp1d(raman_solver.stimulated_raman_scattering.frequency, raman_solver.stimulated_raman_scattering.rho[:,-1])
     p_cut = np.array(p_cut) * (rho_end(f_cut))**2
 
     snr_nl = p_cut / carriers_nli
-
-    OSNR_NL = np.loadtxt(open(csv_files_dir+'OSNR_NL.csv','rb'),delimiter=',')
 
     fig1 = plt.figure()
     plt.plot(f_cut, 10*np.log10(p_cut)+30, '*')
