@@ -130,7 +130,7 @@ if __name__ == '__main__':
     if l%2 == 0:
         l = l - 1
         f_channel = f_channel[:l]
-    cut_index = [*range(4, l, 20)]
+    cut_index = [4, 22, 39, 56, 72, 83, 101, 119, 137, 155]
 
     pch = 0.50119E-03*np.ones(l)
     channel_numbers = range(l)
