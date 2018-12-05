@@ -127,9 +127,6 @@ if __name__ == '__main__':
     guard_band_indices = range(78, 83)
     f_channel = (1E+12)*np.loadtxt(open(csv_files_dir+'f_channel.csv','rb'),delimiter=',')
     l=len(f_channel)
-    if l%2 == 0:
-        l = l - 1
-        f_channel = f_channel[:l]
     cut_index = [4, 22, 39, 56, 72, 83, 101, 119, 137, 155]
 
     pch = 0.50119E-03*np.ones(l)
