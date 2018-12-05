@@ -68,7 +68,7 @@ if __name__ == '__main__':
     verbose_raman = 2
 
     # NLI PARAMETERS
-    f_resolution_nli = 1e9
+    f_resolution_nli = 0.2e9
     verbose_nli = 1
     method_nli = 'ggn_integral'
 
@@ -154,6 +154,8 @@ if __name__ == '__main__':
     p_cut = np.array(p_cut) * (rho_end(f_cut))**2
 
     snr_nl = p_cut / carriers_nli
+    print(snr_nl)
+    np.save('snr_nl',snr_nl)
 
     OSNR_NL = np.loadtxt(open(csv_files_dir+'OSNR_NL.csv','rb'),delimiter=',')
 
