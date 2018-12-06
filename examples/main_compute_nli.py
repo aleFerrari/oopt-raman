@@ -68,7 +68,7 @@ if __name__ == '__main__':
     verbose_raman = 2
 
     # NLI PARAMETERS
-    f_resolution_nli = 0.2e9
+    f_resolution_nli = 1e9
     verbose_nli = 1
     method_nli = 'ggn_integral'
 
