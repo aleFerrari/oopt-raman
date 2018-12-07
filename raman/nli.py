@@ -108,7 +108,7 @@ class NLI:
                     k) + 1)  # Get number of points required to ensure that the maximum frequency step in Bopt is not passed
             f2Long = (abs(f2DenseUpLimit) * k ** (np.arange(1, NlogLong + 1, 1) - 1)) - (
                     abs(f2DenseUpLimit) - f2DenseUpLimit)
-            f2Array = np.array(list(f2Short) + list(f2ArrayDense[1:len(f2ArrayDense)]) + list(f2Long))
+            f2Array = np.array(list(f2Short) + list(f2ArrayDense[1:]) + list(f2Long))
         else:
             k = Bopt / 2 / (Bopt / 2 - DeltafMax)
             NlogShort = np.ceil(np.log(fMax / abs(f2DenseUpLimit)) * 1 / np.log(k) + 1)
@@ -120,7 +120,7 @@ class NLI:
                     k) + 1)
             f2Long = -(abs(f2DenseLowLimit) * k ** (np.arange(NlogLong, 0, -1) - 1)) + (
                     abs(f2DenseLowLimit) + f2DenseLowLimit)
-            f2Array = np.array(list(f2Long) + list(f2ArrayDense[1:len(f2ArrayDense)]) + list(f2Short))
+            f2Array = np.array(list(f2Long) + list(f2ArrayDense[1:]) + list(f2Short))
 
         return f2Array + f_central
 
