@@ -184,6 +184,7 @@ class NLI:
             (min(carriers, key=attrgetter('frequency')).baud_rate / 2)
         num_samples = int((stop_frequency_psd - start_frequency_psd) / f_resolution) + 1
         frequency_psd = np.array([start_frequency_psd + ii * f_resolution for ii in range(0, num_samples)])
+        frequency_psd = np.arange(min(frequency_rho),max(frequency_rho),f_resolution)
 
         psd = ut.raised_cosine_comb(frequency_psd, *carriers)
 
