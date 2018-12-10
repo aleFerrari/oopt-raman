@@ -104,15 +104,12 @@ def test_nli():
 
     model_parameters = namedtuple('NLIParameters','method frequency_resolution verbose')
     model_parameters.method = 'ggn_integral'
-    model_parameters.frequency_resolution = 1e9
+    model_parameters.frequency_resolution = 0.2e9
     model_parameters.verbose = False
 
     # WDM COMB PARAMETERS
-    num_channels = 91
-    delta_f = 50e9
     roll_off = 0.1
     symbol_rate = 32e9
-    start_f = 191.0e12
 
     # SPECTRUM
     spectral_information = namedtuple('SpectralInformation', 'carriers')
@@ -161,7 +158,7 @@ def test_nli():
     print(snr_nl)
     OSNR_NL = [34.87001733, 34.58858743, 34.46470382, 34.38424991, 34.32143473, 34.28745844, 34.26041349,
                34.25713172, 34.27668589, 34.35232055, 34.60162964]
-
+# [36.569354, 35.9477  , 35.639568, 35.442189, 35.309405, 35.233355,35.202252, 35.219708, 35.305059, 35.512505, 36.076057]
     npt.assert_allclose(snr_nl, OSNR_NL, rtol=1E-6)
 
 

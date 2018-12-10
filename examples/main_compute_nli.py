@@ -128,6 +128,7 @@ if __name__ == '__main__':
     f_channel = (1E+12)*np.loadtxt(open(csv_files_dir+'f_channel.csv','rb'),delimiter=',')
     l=len(f_channel)
     cut_index = [4, 22, 39, 56, 72, 83, 101, 119, 137, 155]
+    cut_index = [4]
 
     pch = 0.50119E-03*np.ones(l)
     channel_numbers = range(l)
@@ -154,7 +155,7 @@ if __name__ == '__main__':
     print(snr_nl)
     np.save('snr_nl',snr_nl)
 
-    OSNR_NL = np.loadtxt(open(csv_files_dir+'OSNR_NL.csv','rb'),delimiter=',')
+    OSNR_NL = np.loadtxt(open(csv_files_dir+'OSNR_NL.csv', 'rb'),delimiter=',')
 
     fig1 = plt.figure()
     plt.plot(f_cut, 10*np.log10(p_cut)+30, '*')
