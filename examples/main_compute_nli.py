@@ -7,6 +7,7 @@ import raman.raman as rm
 import matplotlib.pyplot as plt
 from operator import attrgetter
 from scipy.interpolate import interp1d
+from scipy.io import loadmat
 
 
 def raman_gain_efficiency_from_csv(csv_file_name):
@@ -68,7 +69,7 @@ if __name__ == '__main__':
     verbose_raman = 2
 
     # NLI PARAMETERS
-    f_resolution_nli = 0.2e9
+    f_resolution_nli = 1e9
     verbose_nli = 1
     method_nli = 'ggn_integral'
 
@@ -116,16 +117,22 @@ if __name__ == '__main__':
 
     csv_files_dir = './resources/'
 
-    f_axis = (1E+12)*np.loadtxt(open(csv_files_dir+'f_axis.csv','rb'),delimiter=',')
-    z_array = (1E+3)*np.loadtxt(open(csv_files_dir+'z_array.csv','rb'),delimiter=',')
-    rho = np.loadtxt(open(csv_files_dir+'raman_profile.csv'),delimiter=',')
+    # f_axis = (1E+12)*np.loadtxt(open(csv_files_dir+'f_axis.csv','rb'),delimiter=',')
+    # z_array = (1E+3)*np.loadtxt(open(csv_files_dir+'z_array.csv','rb'),delimiter=',')
+    # rho = np.loadtxt(open(csv_files_dir+'raman_profile.csv'),delimiter=',')
+
+    raman = loadmat('resources/XTalk_and_RamanAmp.mat')
+    f_axis = (1E+12)*raman["f_axis"][0]
+    z_array = (1E+3)*raman["z_array"][0]
+    rho = raman["raman_profile"]
 
     A = np.exp((-attenuation_coefficient_p / 2) * z_array)
     for i in range(len(rho)):
         rho[i] = np.multiply(rho[i], A)
 
     guard_band_indices = range(78, 83)
-    f_channel = (1E+12)*np.loadtxt(open(csv_files_dir+'f_channel.csv','rb'),delimiter=',')
+    #f_channel = (1E+12)*np.loadtxt(open(csv_files_dir+'f_channel.csv','rb'),delimiter=',')
+    f_channel = (1E+12)*raman["f_channel"][0]
     l=len(f_channel)
     cut_index = [5, 23, 40, 57, 73, 84, 102, 120, 138, 156]
     cut_index = [5]
