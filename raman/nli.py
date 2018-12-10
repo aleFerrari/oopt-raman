@@ -63,7 +63,7 @@ class NLI:
         DeltafMin = Deltaf / NpointsPerSlotMax
         DeltafMax = Deltaf / NpointsPerSlotMin
         Bopt = max([len_carriers * Deltaf, max(frequency_psd) - min(frequency_psd) + Deltaf])
-        fMax = 0.6 * Bopt;
+        fMax = 0.6 * Bopt
         minFWMinv = 1E6
         alpha_e = (alpha0 / 2)
 
@@ -173,8 +173,6 @@ class NLI:
         frequency_rho = self.srs_profile.raman_bvp_solution.frequency
         rho = self.srs_profile.raman_bvp_solution.rho
         rho = rho * np.exp(np.abs(alpha0) * z / 2)
-        rho=np.ones(rho.shape)
-
 
 
 
@@ -225,7 +223,6 @@ class NLI:
                 delta_beta = 4 * np.pi ** 2 * (f1 - f_eval) * (f2_array - f_eval) * \
                              (beta2 + np.pi * beta3 * (f1 + f2_array))
                 rho_2 = rho_function(f2_array)
-
                 rho_3 = rho_function(f3_array)
                 delta_rho = rho_1[f_ind, :] * rho_2 * rho_3 / rho_f
 
