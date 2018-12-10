@@ -48,7 +48,7 @@ class NLI:
         """
         self._model_parameters = model_params
 
-    def compute_dense_regimes(self,f1,f_eval,frequency_psd,len_carriers,alpha0,beta2):
+    def compute_dense_regimes(self, f1, f_eval,frequency_psd,len_carriers,alpha0,beta2):
 
         f_central = min(frequency_psd) + (max(frequency_psd) - min(frequency_psd)) / 2
         frequency_psd = frequency_psd - f_central
@@ -96,7 +96,7 @@ class NLI:
         DeltafArray = f2DenseWidth / NpointsDense  # Get frequency spacing
         f2ArrayDense = np.arange(f2DenseLowLimit, f2DenseUpLimit, DeltafArray)  # Define the denser grid
 
-        if f_eval < f_central:
+        if f_eval < 0:
             k = Bopt / 2 / (Bopt / 2 - DeltafMax)  # Get step ratio for logspace array definition
             NlogShort = np.ceil(np.log(fMax / abs(f2DenseLowLimit)) * 1 / np.log(
                 k) + 1)  # Get number of points required to ensure that the maximum frequency step in Bopt is not passed

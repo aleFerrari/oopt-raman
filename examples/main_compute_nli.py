@@ -52,7 +52,7 @@ if __name__ == '__main__':
     num_channels = 91
     delta_f = 50e9
     pch = 1e-3
-    roll_off = 0.1
+    roll_off = 0
     symbol_rate = 32e9
     start_f = 191.0e12
 
@@ -127,8 +127,8 @@ if __name__ == '__main__':
     guard_band_indices = range(78, 83)
     f_channel = (1E+12)*np.loadtxt(open(csv_files_dir+'f_channel.csv','rb'),delimiter=',')
     l=len(f_channel)
-    cut_index = [4, 22, 39, 56, 72, 83, 101, 119, 137, 155]
-    cut_index = [4]
+    cut_index = [5, 23, 40, 57, 73, 84, 102, 120, 138, 156]
+    cut_index = [5]
 
     pch = 0.50119E-03*np.ones(l)
     channel_numbers = range(l)
