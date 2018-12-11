@@ -1,6 +1,3 @@
-.cache/
-.idea/
-.pytest_cache/
 srs_env/
 OOPT_Raman.egg-info/
 build/
