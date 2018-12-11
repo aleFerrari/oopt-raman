@@ -1,6 +1,4 @@
-.cache/
-.idea/
-.pytest_cache/
+srs_env/
 OOPT_Raman.egg-info/
 build/
 dist/
@@ -9,5 +7,3 @@ tests/__pycache__/
 examples/output/*
 example/resources/*
 venv/
-
-

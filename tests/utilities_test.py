@@ -26,22 +26,23 @@ def test_compute_power_spectrum(num_channels):
     pump_pow = [0.450, 0.400]
     pump_freq = [204.0e12, 206.3e12]
     pump_direction = [-1, -1]
+    pump_bandwidth = [1e6, 1e6]
     num_pumps = len(pump_pow)
 
     spectral_information = namedtuple('SpectralInformation', 'carriers')
     raman_pump_information = namedtuple('SpectralInformation', 'raman_pumps')
     channel = namedtuple('Channel', 'channel_number frequency baud_rate roll_off power')
     power = namedtuple('Power', 'signal nonlinear_interference amplified_spontaneous_emission')
-    pump = namedtuple('RamanPump', 'pump_number power frequency propagation_direction')
+    pump = namedtuple('RamanPump', 'pump_number power frequency propagation_direction pump_bandwidth')
 
     carriers = tuple(channel(1 + ii, start_f + (delta_f * ii), symbol_rate, roll_off, power(pch, 0, 0))
                                      for ii in range(0, num_channels))
-    pumps = tuple(pump(1 + ii, pump_pow[ii], pump_freq[ii], pump_direction[ii])
+    pumps = tuple(pump(1 + ii, pump_pow[ii], pump_freq[ii], pump_direction[ii], pump_bandwidth[ii])
                                 for ii in range(0, num_pumps))
     spec_info = spectral_information(carriers=carriers)
     raman_pump_info = raman_pump_information(raman_pumps=pumps)
 
-    pow_array, f_array, propagation_direction = ut.compute_power_spectrum(spec_info, raman_pump_info)
+    pow_array, f_array, propagation_direction, noise_bandwidth_array = ut.compute_power_spectrum(spec_info, raman_pump_info)
 
     # Computing expected values for wdm channels
     n_slices = mt.ceil(wdm_band / frequency_slice_size)
@@ -55,15 +56,18 @@ def test_compute_power_spectrum(num_channels):
     f_array_test = np.arange(start_f, stop_f, frequency_slice_size)
 
     propagation_direction_test = np.ones(num_channels)
+    channels_noise_bw_test = np.ones(num_channels)*symbol_rate
 
     # Computing expected values channels + Raman pumps
     pow_array_test = np.append(pow_array_test, pump_pow)
     f_array_test = np.append(f_array_test, pump_freq)
     propagation_direction_test = np.append(propagation_direction_test, pump_direction)
+    noise_bandwidth_array_test = np.append(channels_noise_bw_test, pump_bandwidth)
 
     npt.assert_allclose(pow_array_test, pow_array, rtol=1e-6)
     npt.assert_allclose(f_array_test, f_array, rtol=1e-6)
     npt.assert_allclose(propagation_direction_test, propagation_direction, rtol=1e-6)
+    npt.assert_allclose(noise_bandwidth_array_test, noise_bandwidth_array, rtol=1e-6)
 
 
 @pytest.mark.parametrize("roll_off", [0, 0.5])

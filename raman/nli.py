@@ -11,8 +11,6 @@ import raman.utilities as ut
 from operator import attrgetter
 from scipy.interpolate import interp1d
 
-
-
 class NLI:
 
     def __init__(self, fiber_information=None):
@@ -48,6 +46,7 @@ class NLI:
         :param model_params: namedtuple containing the parameters used to compute the NLI.
         """
         self._model_parameters = model_params
+
 
     def compute_dense_regimes(self, f1, f_eval,frequency_psd,len_carriers,alpha0,beta2):
 
@@ -161,8 +160,6 @@ class NLI:
         beta3 = self.fiber_information.beta3
         gamma = self.fiber_information.gamma
 
-
-
         if len(self.fiber_information.attenuation_coefficient.alpha_power) == 1:
             alpha0 = self.fiber_information.attenuation_coefficient.alpha_power[0]
         else:
@@ -175,8 +172,6 @@ class NLI:
         rho = self.srs_profile.raman_bvp_solution.rho
         rho = rho * np.exp(np.abs(alpha0) * z / 2)
 
-
-
         # PSD generation
         f_resolution = self.model_parameters.frequency_resolution
         start_frequency_psd = min(carriers, key=attrgetter('frequency')).frequency - \
@@ -186,22 +181,19 @@ class NLI:
         num_samples = int((stop_frequency_psd - start_frequency_psd) / f_resolution) + 1
         frequency_psd = np.array([start_frequency_psd + ii * f_resolution for ii in range(0, num_samples)])
         frequency_psd = np.arange(min(frequency_rho),max(frequency_rho),f_resolution)
-
         psd = ut.raised_cosine_comb(frequency_psd, *carriers)
-
         f1_array = frequency_psd
-
         f2_array = frequency_psd
-
         len_carriers = len(carriers)
-
         g1 = psd
         g2 = psd
 
         # Interpolation of SRS gain/loss profile
         rho_function = interp1d(frequency_rho, rho, axis=0, fill_value='extrapolate')
 
+
         rho_1 = rho_function(f1_array)
+
         rho_f = rho_function(f_eval)
 
         # Progressbar initialization
@@ -229,6 +221,7 @@ class NLI:
                 rho_2 = rho_function(f2_array)
                 rho_3 = rho_function(f3_array)
                 delta_rho = rho_1[f_ind, :] * rho_2 * rho_3 / rho_f
+
 
                 fwm_eff = self._fwm_efficiency(delta_beta, delta_rho, z, alpha0)  # compute FWM efficiency
 
