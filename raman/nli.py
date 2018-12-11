@@ -52,7 +52,6 @@ class NLI:
     def compute_dense_regimes(self, f1, f_eval,frequency_psd,len_carriers,alpha0,beta2):
 
         f_central = min(frequency_psd) + (max(frequency_psd) - min(frequency_psd)) / 2
-        f_central = 191.8E12
         frequency_psd = frequency_psd - f_central
         f_eval = f_eval - f_central
         f1 = f1 - f_central
