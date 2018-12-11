@@ -47,6 +47,7 @@ if __name__ == '__main__':
   frequency_attenuation = np.array([193.5e12])
   temperature_k = np.array([298])
 
+
   # WDM COMB PARAMETERS
   num_channels = 91
   delta_f = 50e9
@@ -97,8 +98,8 @@ if __name__ == '__main__':
   # SOLVER PARAMETERS
   raman_solver_information = namedtuple('RamanSolverInformation', 'z_resolution tolerance verbose')
   solver_parameters = raman_solver_information(z_resolution=z_resolution, tolerance=tolerance, verbose=verbose)
-
   gain_loss_profile, ase_profile = main(fiber, spectrum, raman_pumps, solver_parameters)
+
 
   z_rho = gain_loss_profile.z
   freq_rho = gain_loss_profile.frequency
@@ -122,6 +123,7 @@ if __name__ == '__main__':
   ax.set_zlabel('rho [dB]')
 
   fig1.colorbar(surf, shrink=0.5, aspect=5)
+
 
   fig2 = plt.figure()
   plt.plot(z_rho * 1e-3, (20 * np.log10(gain_loss_profile.rho.transpose())))
