@@ -13,6 +13,8 @@ from operator import attrgetter
 from scipy.interpolate import interp1d
 import raman.utilities as ut
 import progressbar
+from scipy.io import loadmat
+
 
 def test_nli_fiber_information():
     fiber_length = np.array([80e3])
@@ -104,7 +106,7 @@ def test_nli():
 
     model_parameters = namedtuple('NLIParameters','method frequency_resolution verbose')
     model_parameters.method = 'ggn_integral'
-    model_parameters.frequency_resolution = 0.2e9
+    model_parameters.frequency_resolution = 1e9
     model_parameters.verbose = False
 
     # WDM COMB PARAMETERS
@@ -119,13 +121,15 @@ def test_nli():
     # COMPARISON WITH MATHLAB RESULTS
 
     csv_files_dir = './resources/'
-    f_axis = (1E+12) * np.loadtxt(open(csv_files_dir + 'f_axis.csv', 'rb'), delimiter=',')
-    z_array = (1E+3) * np.loadtxt(open(csv_files_dir + 'z_array.csv', 'rb'), delimiter=',')
-    rho = np.loadtxt(open(csv_files_dir + 'raman_profile.csv'), delimiter=',')
+    raman = loadmat('resources/XTalk_and_RamanAmp.mat')
+    f_axis = (1E+12) * raman["f_axis"][0]
+    z_array = (1E+3) * raman["z_array"][0]
+    rho = raman["raman_profile"]
+
     A = np.exp((-attenuation_coefficient_p.alpha_power / 2) * z_array)
     for i in range(len(rho)):
         rho[i] = np.multiply(rho[i], A)
-    f_channel = (1E+12) * np.loadtxt(open(csv_files_dir + 'f_channel.csv', 'rb'), delimiter=',')
+    f_channel = (1E+12) * raman["f_channel"][0]
     f_channel = f_channel[range(11)]
     l = len(f_channel)
     cut_index = [*range(1,l+1)]
