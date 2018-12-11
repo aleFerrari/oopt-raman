@@ -10,7 +10,6 @@ This module contains the class RamanSolver to solve the set of Raman ODE equatio
 
 import numpy as np
 import raman.utilities as ut
-
 import scipy.constants as ph
 from scipy.integrate import solve_bvp
 from scipy.integrate import cumtrapz
@@ -36,7 +35,6 @@ class RamanSolver:
         self._stimulated_raman_scattering = None
         self._spontaneous_raman_scattering = None
 
-
     @property
     def fiber_information(self):
         return self._fiber_information
@@ -44,7 +42,6 @@ class RamanSolver:
     @fiber_information.setter
     def fiber_information(self, fiber_information):
         self._fiber_information = fiber_information
-
         self._stimulated_raman_scattering = None
 
     @property
@@ -286,4 +283,3 @@ class RamanSolver:
                 dpdz_element = prop_direct[f_ind] * (-alphap_fiber[f_ind] + raman_gain - raman_loss) * power_sample
                 dpdz[f_ind][z_ind] = dpdz_element
         return np.vstack(dpdz)
-
