@@ -135,7 +135,7 @@ if __name__ == '__main__':
     f_channel = (1E+12)*raman["f_channel"][0]
     l=len(f_channel)
     cut_index = [5, 23, 40, 57, 73, 84, 102, 120, 138, 156]
-    cut_index = [5]
+    cut_index = [73]
 
     pch = 0.50119E-03*np.ones(l)
     channel_numbers = range(l)

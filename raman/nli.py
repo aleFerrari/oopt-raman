@@ -12,6 +12,7 @@ from operator import attrgetter
 from scipy.interpolate import interp1d
 
 
+
 class NLI:
 
     def __init__(self, fiber_information=None):
@@ -51,6 +52,7 @@ class NLI:
     def compute_dense_regimes(self, f1, f_eval,frequency_psd,len_carriers,alpha0,beta2):
 
         f_central = min(frequency_psd) + (max(frequency_psd) - min(frequency_psd)) / 2
+        f_central = 191.8E12
         frequency_psd = frequency_psd - f_central
         f_eval = f_eval - f_central
         f1 = f1 - f_central
@@ -213,6 +215,8 @@ class NLI:
         # NLI computation
         integrand_f1 = np.zeros(f1_array.size)  # pre-allocate partial result for inner integral
         for f_ind, f1 in enumerate(f1_array):  # loop over f1
+            if g1[f_ind] == 0:
+                continue
             f2_array = self.compute_dense_regimes(f1,f_eval,frequency_psd,len_carriers,alpha0,beta2)
             f3_array = f1 + f2_array - f_eval
             g2 = ut.raised_cosine_comb(f2_array, *carriers)
