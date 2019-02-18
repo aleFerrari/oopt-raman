@@ -10,7 +10,7 @@ import numpy as np
 import raman.utilities as ut
 from operator import attrgetter
 from scipy.interpolate import interp1d
-from collections import namedtuple
+
 class NLI:
 
     def __init__(self, fiber_information=None):
@@ -48,19 +48,21 @@ class NLI:
         self._model_parameters = model_params
 
 
+
     def compute_dense_regimes(self, f1, f_eval,frequency_psd,len_carriers):
+
 
         f_central = min(frequency_psd) + (max(frequency_psd) - min(frequency_psd)) / 2
         frequency_psd = frequency_psd - f_central
         f_eval = f_eval - f_central
         f1 = f1 - f_central
 
-        dense_regime= self.model_parameters.dense_regime
 
         NpointsPerSlotMin = dense_regime.NpointsPerSlotMin
         NpointsPerSlotMax = dense_regime.NpointsPerSlotMax
         Deltaf = dense_regime.Deltaf
         minFWMinv = 10 ** (dense_regime.minFWMinv / 10)
+
 
         DeltafMin = Deltaf / NpointsPerSlotMax
         DeltafMax = Deltaf / NpointsPerSlotMin
@@ -68,7 +70,6 @@ class NLI:
         fMax = 0.6 * Bopt
         alpha_e = (self.fiber_information.attenuation_coefficient.alpha_power / 2)
         beta2 = self.fiber_information.beta2
-
 
         f2DenseUpLimit = max(
             [f_eval + np.sqrt(alpha_e ** 2 / (4 * (np.pi ** 4) * (beta2 ** 2)) * (minFWMinv - 1)) / (f1 - f_eval)  ,
