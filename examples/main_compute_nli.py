@@ -75,6 +75,12 @@ if __name__ == '__main__':
     f_resolution_nli = 2e9
     verbose_nli = 1
     method_nli = 'ggn_integral'
+    NpointsPerSlotMin = 4
+    NpointsPerSlotMax = 5000 / 5
+    Deltaf = 50e9
+    minFWMinv = 1E6
+    dense_regime = namedtuple('Dense regime parameters', 'NpointsPerSlotMin NpointsPerSlotMax Deltaf minFWMinv')
+    dense_regime=dense_regime(NpointsPerSlotMin=NpointsPerSlotMin,NpointsPerSlotMax=NpointsPerSlotMax, Deltaf=Deltaf, minFWMinv=minFWMinv)
 
     # FIBER
     fiber_info = namedtuple('FiberInformation', 'length attenuation_coefficient raman_coefficient beta2 beta3 gamma')
@@ -108,8 +114,8 @@ if __name__ == '__main__':
                                                  tolerance=tolerance, verbose=verbose_raman)
 
     # NLI PARAMETERS
-    nli_parameters = namedtuple('NLIParameters', 'method frequency_resolution verbose')
-    model_params = nli_parameters(method=method_nli, frequency_resolution=f_resolution_nli, verbose=verbose_nli)
+    nli_parameters = namedtuple('NLIParameters', 'method frequency_resolution verbose dense_regime')
+    model_params = nli_parameters(method=method_nli, frequency_resolution=f_resolution_nli, verbose=verbose_nli, dense_regime=dense_regime)
 
     raman_solver = rm.RamanSolver(fiber)
     raman_solver.spectral_information = spectrum
