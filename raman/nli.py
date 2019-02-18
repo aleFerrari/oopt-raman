@@ -57,6 +57,8 @@ class NLI:
         f_eval = f_eval - f_central
         f1 = f1 - f_central
 
+        dense_regime = self.model_parameters.dense_regime
+
 
         NpointsPerSlotMin = dense_regime.NpointsPerSlotMin
         NpointsPerSlotMax = dense_regime.NpointsPerSlotMax

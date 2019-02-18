@@ -80,7 +80,7 @@ if __name__ == '__main__':
     Deltaf = 50e9
     minFWMinv = 1E6
     dense_regime = namedtuple('Dense regime parameters', 'NpointsPerSlotMin NpointsPerSlotMax Deltaf minFWMinv')
-    dense_regime=dense_regime(NpointsPerSlotMin=NpointsPerSlotMin,NpointsPerSlotMax=NpointsPerSlotMax, Deltaf=Deltaf, minFWMinv=minFWMinv)
+    dense_regime = dense_regime(NpointsPerSlotMin=NpointsPerSlotMin,NpointsPerSlotMax=NpointsPerSlotMax, Deltaf=Deltaf, minFWMinv=minFWMinv)
 
     # FIBER
     fiber_info = namedtuple('FiberInformation', 'length attenuation_coefficient raman_coefficient beta2 beta3 gamma')
