@@ -83,7 +83,6 @@ def test_nli_fwm_efficiency(delta_beta,x_talk,delta_rho_fun):
 
     npt.assert_allclose(calculed,expected,rtol=1E-5)
 
-
 def test_nli():
     # FIBER PARAMETERS
     fiber_information = namedtuple('FiberInformation', 'length attenuation_coefficient raman_coefficient beta2 beta3 gamma')
@@ -154,22 +153,3 @@ def test_nli():
                34.25713172, 34.27668589, 34.35232055, 34.60162964]
 
     npt.assert_allclose(snr_nl, osnr_nl, rtol=1E-6)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

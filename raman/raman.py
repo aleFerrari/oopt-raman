@@ -286,3 +286,4 @@ class RamanSolver:
                 dpdz[f_ind][z_ind] = dpdz_element
 
         return np.vstack(dpdz)
+
