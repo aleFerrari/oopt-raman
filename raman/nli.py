@@ -54,8 +54,8 @@ class NLI:
         f_eval = f_eval - f_central
         f1 = f1 - f_central
 
-        n_points_per_slot_min = 5
-        n_points_per_slot_max = 2000 
+        n_points_per_slot_min = 4
+        n_points_per_slot_max = 5000
 
         delta_f = 50e9
 
