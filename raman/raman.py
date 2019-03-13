@@ -238,6 +238,7 @@ class RamanSolver:
                 computed_boundary_value[index] = yb[index]
 
         return power_spectrum - computed_boundary_value
+
     def _initial_guess_stimulated_raman(self, z, power_spectrum, alphap_fiber, prop_direct):
         """ Computes the initial guess knowing the boundary conditions
 
@@ -258,6 +259,7 @@ class RamanSolver:
                 power_guess[f_index, :] = np.exp(-alphap_fiber[f_index] * z[::-1]) * power_slice
 
         return power_guess
+
     def _ode_stimulated_raman(self, z, power_spectrum, alphap_fiber, freq_array, cr_raman_matrix, prop_direct):
         """ Aim of ode_raman is to implement the set of ordinary differential equations (ODEs) describing the Raman effect.
 
@@ -282,4 +284,6 @@ class RamanSolver:
 
                 dpdz_element = prop_direct[f_ind] * (-alphap_fiber[f_ind] + raman_gain - raman_loss) * power_sample
                 dpdz[f_ind][z_ind] = dpdz_element
+
         return np.vstack(dpdz)
+

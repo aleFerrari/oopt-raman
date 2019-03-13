@@ -11,6 +11,7 @@ import raman.utilities as ut
 from operator import attrgetter
 from scipy.interpolate import interp1d
 
+
 class NLI:
 
     def __init__(self, fiber_information=None):
@@ -179,17 +180,20 @@ class NLI:
             (min(carriers, key=attrgetter('frequency')).baud_rate / 2)
         num_samples = int((stop_frequency_psd - start_frequency_psd) / f_resolution) + 1
         frequency_psd = np.array([start_frequency_psd + ii * f_resolution for ii in range(0, num_samples)])
+
         frequency_psd = np.arange(min(frequency_rho) - f_resolution, max(frequency_rho) + f_resolution, f_resolution)
         psd = ut.raised_cosine_comb(frequency_psd, *carriers)
         f1_array = frequency_psd
         f2_array = frequency_psd
         len_carriers = len(carriers)
+
         g1 = psd
         g2 = psd
 
         # Interpolation of SRS gain/loss profile
         rho_function = interp1d(frequency_rho, rho, axis=0, fill_value='extrapolate')
         rho_1 = rho_function(f1_array)
+
         rho_f = rho_function(f_eval)
 
         # Progressbar initialization
@@ -202,17 +206,20 @@ class NLI:
         # NLI computation
         integrand_f1 = np.zeros(f1_array.size)  # pre-allocate partial result for inner integral
         for f_ind, f1 in enumerate(f1_array):  # loop over f1
+
             if g1[f_ind] == 0:
                 continue
             f2_array = self._compute_dense_regimes(f1, f_eval, frequency_psd, len_carriers, alpha0, beta2)
             f3_array = f1 + f2_array - f_eval
             g2 = ut.raised_cosine_comb(f2_array, *carriers)
+
             g3 = ut.raised_cosine_comb(f3_array, *carriers)
             ggg = g2 * g3 * g1[f_ind]
 
             if np.count_nonzero(ggg):
                 delta_beta = 4 * np.pi ** 2 * (f1 - f_eval) * (f2_array - f_eval) * \
                              (beta2 + np.pi * beta3 * (f1 + f2_array))
+                
                 rho_2 = rho_function(f2_array)
                 rho_3 = rho_function(f3_array)
                 delta_rho = rho_1[f_ind, :] * rho_2 * rho_3 / rho_f
@@ -239,7 +246,9 @@ class NLI:
         fwm_eff = (delta_rho[:,-1]*np.exp(w*z[-1])-delta_rho[:,0]*np.exp(w*z[0]))/w
         for z_ind in range(0, len(z) - 1):
             derivative_rho = (delta_rho[:, z_ind + 1] - delta_rho[:, z_ind]) / (z[z_ind + 1] - z[z_ind])
+
             fwm_eff -= derivative_rho * (np.exp(w*z[z_ind + 1])-np.exp(w*z[z_ind]))/(w**2)
+
         fwm_eff = np.abs(fwm_eff) ** 2
 
         return fwm_eff

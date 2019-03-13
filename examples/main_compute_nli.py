@@ -26,6 +26,7 @@ def raman_gain_efficiency_from_csv(csv_file_name):
 
 def main(fiber_information, spectral_information, raman_solver, model_params, cut_list):
     raman_solver.stimulated_raman_scattering  # Compute SRS profile
+
     nlint = nli.NLI(fiber_information=fiber_information)
     nlint.srs_profile = raman_solver
     nlint.model_parameters = model_params
@@ -38,7 +39,6 @@ def main(fiber_information, spectral_information, raman_solver, model_params, cu
 
 
 if __name__ == '__main__':
-
 
     # FIBER PARAMETERS
     cr_file_name = './raman_gain_efficiency/SSMF.csv'
@@ -58,7 +58,7 @@ if __name__ == '__main__':
     pch = 1e-3
 
     cut_list = range(5, num_channels, 5)
-
+  
     roll_off = 0.1
     symbol_rate = 32e9
     start_f = 191.0e12
