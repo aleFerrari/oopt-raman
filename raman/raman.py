@@ -169,7 +169,7 @@ class RamanSolver:
     def stimulated_raman_scattering(self):
         """ Return rho fiber gain/loss profile induced by stimulated Raman scattering.
 
-        :return: self._raman_bvp_solution: the fiber's electric field gain/loss profile vs frequency and z.
+        :return: self._stimulated_raman_scattering: the SRS problem solution.
         scipy.interpolate.PPoly instance
         """
 
