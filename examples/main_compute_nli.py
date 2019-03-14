@@ -26,7 +26,7 @@ def raman_gain_efficiency_from_csv(csv_file_name):
 
 def main(fiber_information, spectral_information, raman_solver, model_params, cut_list):
     raman_solver.stimulated_raman_scattering  # Compute SRS profile
-
+    
     nlint = nli.NLI(fiber_information=fiber_information)
     nlint.srs_profile = raman_solver
     nlint.model_parameters = model_params
@@ -63,13 +63,6 @@ if __name__ == '__main__':
     symbol_rate = 32e9
     start_f = 191.0e12
 
-    # RAMAN PUMP PARAMETERS
-    pump_pow = [150e-3, 250e-3, 150e-3, 250e-3, 200e-3]
-    pump_freq = [200.2670e12, 201.6129e12, 207.1823e12, 208.6231e12, 210.0840e12]
-    pump_bandwidth = [1e6, 1e6, 1e6, 1e6, 1e6]
-    prop_direction = [-1, -1, -1, -1, -1]
-    num_pumps = len(pump_pow)
-
     # ODE SOLVER PARAMETERS
     z_resolution = 1e3
     tolerance = 1e-8
@@ -99,13 +92,6 @@ if __name__ == '__main__':
                      for ii in range(0, num_channels))
     spectrum = spectral_information(carriers=carriers)
 
-    # RAMAN PUMPS
-    raman_pump_information = namedtuple('SpectralInformation', 'raman_pumps')
-    pump = namedtuple('RamanPump', 'pump_number power frequency propagation_direction pump_bandwidth')
-    pumps = tuple(pump(1 + ii, pump_pow[ii], pump_freq[ii], prop_direction[ii], pump_bandwidth[ii])
-                  for ii in range(0, num_pumps))
-    raman_pumps = raman_pump_information(raman_pumps=pumps)
-
     # SOLVER PARAMETERS
     raman_solver_information = namedtuple('RamanSolverInformation', ' z_resolution tolerance verbose')
     solver_parameters = raman_solver_information(z_resolution=z_resolution,
@@ -117,7 +103,6 @@ if __name__ == '__main__':
 
     raman_solver = rm.RamanSolver(fiber)
     raman_solver.spectral_information = spectrum
-    raman_solver.raman_pump_information = raman_pumps
     raman_solver.solver_params = solver_parameters
 
     carriers_nli = main(fiber, spectrum, raman_solver, model_params, cut_list)

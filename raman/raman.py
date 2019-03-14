@@ -17,6 +17,13 @@ from scipy.interpolate import interp1d
 from scipy.optimize import OptimizeResult
 
 class RamanSolver:
+""" RamanSolver computes the stimulated Raman scattering and the spontaneous 
+    Raman scattering in optical communication systems.
+    For more details:
+     Bromage, Jake. "Raman amplification for fiber communications systems."
+     Journal of Lightwave Technology 22.1 (2004): 79.
+"""
+
 
     def __init__(self, fiber_information=None):
         """ Initialize the fiber object with its physical parameters
@@ -169,7 +176,7 @@ class RamanSolver:
     def stimulated_raman_scattering(self):
         """ Return rho fiber gain/loss profile induced by stimulated Raman scattering.
 
-        :return: self._raman_bvp_solution: the fiber's electric field gain/loss profile vs frequency and z.
+        :return: self._stimulated_raman_scattering: the SRS problem solution.
         scipy.interpolate.PPoly instance
         """
 
@@ -286,4 +293,3 @@ class RamanSolver:
                 dpdz[f_ind][z_ind] = dpdz_element
 
         return np.vstack(dpdz)
-

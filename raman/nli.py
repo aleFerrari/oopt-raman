@@ -182,6 +182,7 @@ class NLI:
         frequency_psd = np.array([start_frequency_psd + ii * f_resolution for ii in range(0, num_samples)])
 
         frequency_psd = np.arange(min(frequency_rho) - f_resolution, max(frequency_rho) + f_resolution, f_resolution)
+
         psd = ut.raised_cosine_comb(frequency_psd, *carriers)
         f1_array = frequency_psd
         f2_array = frequency_psd
@@ -192,6 +193,7 @@ class NLI:
 
         # Interpolation of SRS gain/loss profile
         rho_function = interp1d(frequency_rho, rho, axis=0, fill_value='extrapolate')
+
         rho_1 = rho_function(f1_array)
 
         rho_f = rho_function(f_eval)
