@@ -17,6 +17,12 @@ from scipy.interpolate import interp1d
 from scipy.optimize import OptimizeResult
 
 class RamanSolver:
+""" RamanSolver computes the stimulated Raman scattering and the spontaneous 
+    Raman scattering in optical communication systems.
+    For more details:
+     Bromage, Jake. "Raman amplification for fiber communications systems."
+     Journal of Lightwave Technology 22.1 (2004): 79.
+"""
 
     def __init__(self, fiber_information=None):
         """ Initialize the fiber object with its physical parameters
