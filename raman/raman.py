@@ -24,6 +24,7 @@ class RamanSolver:
      Journal of Lightwave Technology 22.1 (2004): 79.
 """
 
+
     def __init__(self, fiber_information=None):
         """ Initialize the fiber object with its physical parameters
 
@@ -292,4 +293,3 @@ class RamanSolver:
                 dpdz[f_ind][z_ind] = dpdz_element
 
         return np.vstack(dpdz)
-
