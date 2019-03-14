@@ -138,7 +138,6 @@ def test_nli():
     carriers_nli = [nlint.compute_nli(carrier, *carriers)
                     for carrier in carriers if (carrier.channel_number in cut_index)]
 
-    # PLOT RESULTS
     p_cut = [carrier.power.signal for carrier in sorted(spectrum.carriers, key=attrgetter('frequency')) if
              (carrier.channel_number in cut_index)]
     f_cut = [carrier.frequency for carrier in sorted(spectrum.carriers, key=attrgetter('frequency')) if
@@ -148,8 +147,7 @@ def test_nli():
     p_cut = np.array(p_cut) * (rho_end(f_cut)) ** 2
 
     snr_nl = 10*np.log10(p_cut / carriers_nli)
-    print(snr_nl)
-    osnr_nl = [34.87001733, 34.58858743, 34.46470382, 34.38424991, 34.32143473, 34.28745844, 34.26041349,
+    expected_snr_nl = [34.87001733, 34.58858743, 34.46470382, 34.38424991, 34.32143473, 34.28745844, 34.26041349,
                34.25713172, 34.27668589, 34.35232055, 34.60162964]
 
-    npt.assert_allclose(snr_nl, osnr_nl, rtol=1E-6)
+    npt.assert_allclose(snr_nl, expected_snr_nl, rtol=1E-6)
