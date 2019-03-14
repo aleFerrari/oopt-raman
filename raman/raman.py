@@ -17,6 +17,13 @@ from scipy.interpolate import interp1d
 from scipy.optimize import OptimizeResult
 
 class RamanSolver:
+""" RamanSolver computes the stimulated Raman scattering and the spontaneous 
+    Raman scattering in optical communication systems.
+    For more details:
+     Bromage, Jake. "Raman amplification for fiber communications systems."
+     Journal of Lightwave Technology 22.1 (2004): 79.
+"""
+
 
     def __init__(self, fiber_information=None):
         """ Initialize the fiber object with its physical parameters
@@ -169,7 +176,7 @@ class RamanSolver:
     def stimulated_raman_scattering(self):
         """ Return rho fiber gain/loss profile induced by stimulated Raman scattering.
 
-        :return: self._raman_bvp_solution: the fiber's electric field gain/loss profile vs frequency and z.
+        :return: self._stimulated_raman_scattering: the SRS problem solution.
         scipy.interpolate.PPoly instance
         """
 
@@ -238,6 +245,7 @@ class RamanSolver:
                 computed_boundary_value[index] = yb[index]
 
         return power_spectrum - computed_boundary_value
+
     def _initial_guess_stimulated_raman(self, z, power_spectrum, alphap_fiber, prop_direct):
         """ Computes the initial guess knowing the boundary conditions
 
@@ -258,6 +266,7 @@ class RamanSolver:
                 power_guess[f_index, :] = np.exp(-alphap_fiber[f_index] * z[::-1]) * power_slice
 
         return power_guess
+
     def _ode_stimulated_raman(self, z, power_spectrum, alphap_fiber, freq_array, cr_raman_matrix, prop_direct):
         """ Aim of ode_raman is to implement the set of ordinary differential equations (ODEs) describing the Raman effect.
 
@@ -282,4 +291,5 @@ class RamanSolver:
 
                 dpdz_element = prop_direct[f_ind] * (-alphap_fiber[f_ind] + raman_gain - raman_loss) * power_sample
                 dpdz[f_ind][z_ind] = dpdz_element
+
         return np.vstack(dpdz)

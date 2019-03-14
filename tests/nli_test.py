@@ -82,24 +82,3 @@ def test_nli_fwm_efficiency(delta_beta,x_talk,delta_rho_fun):
     calculed = NLI._fwm_efficiency(delta_beta, np.array([delta_rho]), z, alpha0)
 
     npt.assert_allclose(calculed,expected,rtol=1E-5)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
