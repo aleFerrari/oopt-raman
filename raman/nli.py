@@ -47,87 +47,81 @@ class NLI:
         """
         self._model_parameters = model_params
 
-
-
     def compute_dense_regimes(self, f1, f_eval,frequency_psd,len_carriers):
-
-
         f_central = min(frequency_psd) + (max(frequency_psd) - min(frequency_psd)) / 2
         frequency_psd = frequency_psd - f_central
         f_eval = f_eval - f_central
         f1 = f1 - f_central
 
         dense_regime = self.model_parameters.dense_regime
+        n_points_per_slot_min = dense_regime.n_points_per_slot_min
+        n_points_per_slot_max = dense_regime.n_points_per_slot_max
+        delta_f = dense_regime.delta_f
+        min_fwm_inv = 10 ** (dense_regime.min_fwm_inv / 10)
 
-
-        NpointsPerSlotMin = dense_regime.NpointsPerSlotMin
-        NpointsPerSlotMax = dense_regime.NpointsPerSlotMax
-        Deltaf = dense_regime.Deltaf
-        minFWMinv = 10 ** (dense_regime.minFWMinv / 10)
-
-
-        DeltafMin = Deltaf / NpointsPerSlotMax
-        DeltafMax = Deltaf / NpointsPerSlotMin
-        Bopt = max([len_carriers * Deltaf, max(frequency_psd) - min(frequency_psd) + Deltaf])
-        fMax = 0.6 * Bopt
+        delta_f_min = delta_f / n_points_per_slot_min
+        delta_f_max = delta_f / n_points_per_slot_max
+        b_opt = max([len_carriers * delta_f, max(frequency_psd) - min(frequency_psd) + delta_f])
+        fMax = 0.6 * b_opt
         alpha_e = (self.fiber_information.attenuation_coefficient.alpha_power / 2)
         beta2 = self.fiber_information.beta2
 
-        f2DenseUpLimit = max(
-            [f_eval + np.sqrt(alpha_e ** 2 / (4 * (np.pi ** 4) * (beta2 ** 2)) * (minFWMinv - 1)) / (f1 - f_eval)  ,
-             f_eval - np.sqrt(alpha_e ** 2 / (4 * (np.pi ** 4) * (beta2 ** 2)) * (minFWMinv - 1)) / (f1 - f_eval)])     # Limit on f2 based on classic FWM
-        f2DenseLowLimit = min(
-            [f_eval + np.sqrt(alpha_e ** 2 / (4 * (np.pi ** 4) * (beta2 ** 2)) * (minFWMinv - 1)) / (f1 - f_eval),
-             f_eval - np.sqrt(alpha_e ** 2 / (4 * (np.pi ** 4) * (beta2 ** 2)) * (minFWMinv - 1)) / (f1 - f_eval)])
+        f2dense_up_limit = max(
+            [f_eval + np.sqrt(alpha_e ** 2 / (4 * (np.pi ** 4) * (beta2 ** 2)) * (min_fwm_inv - 1)) / (f1 - f_eval),
+             f_eval - np.sqrt(alpha_e ** 2 / (4 * (np.pi ** 4) * (beta2 ** 2)) * (min_fwm_inv - 1)) / (f1 - f_eval)])
+        # Limit on f2 based on classic FWM
+        f2dense_low_limit = min(
+            [f_eval + np.sqrt(alpha_e ** 2 / (4 * (np.pi ** 4) * (beta2 ** 2)) * (min_fwm_inv - 1)) / (f1 - f_eval),
+             f_eval - np.sqrt(alpha_e ** 2 / (4 * (np.pi ** 4) * (beta2 ** 2)) * (min_fwm_inv - 1)) / (f1 - f_eval)])
 
-        if f2DenseLowLimit == 0:
-            f2DenseLowLimit = -DeltafMin
+        if f2dense_low_limit == 0:
+            f2dense_low_limit = -delta_f_min
 
-        if f2DenseUpLimit == 0:
-            f2DenseUpLimit = DeltafMin
+        if f2dense_up_limit == 0:
+            f2dense_up_limit = delta_f_min
 
-        if f2DenseLowLimit < -fMax:
-            f2DenseLowLimit = -fMax
+        if f2dense_low_limit < -f_max:
+            f2dense_low_limit = -f_max
 
-        if f2DenseUpLimit > fMax:
-            f2DenseUpLimit = fMax
+        if f2dense_up_limit > f_max:
+            f2dense_up_limit = f_max
 
-        f2DenseWidth = abs(f2DenseUpLimit - f2DenseLowLimit)
-        NpointsDense = np.ceil(
-            f2DenseWidth / DeltafMin)  # Number of integration points to be considered in the denser area
-        if NpointsDense < 100:
-            NpointsDense = 100
+        f2dense_width = abs(f2dense_up_limit - f2dense_low_limit)
+        n_points_dense = np.ceil(
+            f2dense_width / delta_f_min)  # Number of integration points to be considered in the denser area
+        if n_points_dense < 100:
+            n_points_dense = 100
 
-        DeltafArray = f2DenseWidth / NpointsDense  # Get frequency spacing
-        f2ArrayDense = np.arange(f2DenseLowLimit, f2DenseUpLimit, DeltafArray)  # Define the denser grid
+        delta_f_array = f2dense_width / n_points_dense  # Get frequency spacing
+        f2_array_dense = np.arange(f2dense_low_limit, f2dense_up_limit, delta_f_array)  # Define the denser grid
 
         if f_eval < 0:
-            k = Bopt / 2 / (Bopt / 2 - DeltafMax)  # Get step ratio for logspace array definition
-            NlogShort = np.ceil(np.log(fMax / abs(f2DenseLowLimit)) * 1 / np.log(
-                k) + 1)  # Get number of points required to ensure that the maximum frequency step in Bopt is not passed
-            f2Short = -(abs(f2DenseLowLimit) * k ** (np.arange(NlogShort, 0, -1) - 1))  # Generate logspace array
-            k = (Bopt / 2 + (abs(f2DenseUpLimit) - f2DenseUpLimit)) / (
-                    Bopt / 2 - DeltafMax + (abs(f2DenseUpLimit) - f2DenseUpLimit))
-            NlogLong = np.ceil(
-                np.log((fMax + (abs(f2DenseUpLimit) - f2DenseUpLimit)) / abs(f2DenseUpLimit)) * 1 / np.log(
-                    k) + 1)  # Get number of points required to ensure that the maximum frequency step in Bopt is not passed
-            f2Long = (abs(f2DenseUpLimit) * k ** (np.arange(1, NlogLong + 1, 1) - 1)) - (
-                    abs(f2DenseUpLimit) - f2DenseUpLimit)
-            f2Array = np.array(list(f2Short) + list(f2ArrayDense[1:]) + list(f2Long))
+            k = b_opt / 2 / (b_opt / 2 - delta_f_max)  # Get step ratio for logspace array definition
+            n_log_short = np.ceil(np.log(f_max / abs(f2dense_low_limit)) * 1 / np.log(
+                k) + 1)  # Get number of points required to ensure that the maximum frequency step in b_opt is not passed
+            f2short = -(abs(f2dense_low_limit) * k ** (np.arange(n_log_short, 0, -1) - 1))  # Generate logspace array
+            k = (b_opt / 2 + (abs(f2dense_up_limit) - f2dense_up_limit)) / (
+                    b_opt / 2 - delta_f_max + (abs(f2dense_up_limit) - f2dense_up_limit))
+            n_log_long = np.ceil(
+                np.log((f_max + (abs(f2dense_up_limit) - f2dense_up_limit)) / abs(f2dense_up_limit)) * 1 / np.log(
+                    k) + 1)  # Get number of points required to ensure that the maximum frequency step in b_opt is not passed
+            f2long = (abs(f2dense_up_limit) * k ** (np.arange(1, n_log_long + 1, 1) - 1)) - (
+                    abs(f2dense_up_limit) - f2dense_up_limit)
+            f2array = np.array(list(f2short) + list(f2_array_dense[1:]) + list(f2long))
         else:
-            k = Bopt / 2 / (Bopt / 2 - DeltafMax)
-            NlogShort = np.ceil(np.log(fMax / abs(f2DenseUpLimit)) * 1 / np.log(k) + 1)
-            f2Short = f2DenseUpLimit * k ** (np.arange(1, NlogShort + 1, 1) - 1)
-            k = (Bopt / 2 + (abs(f2DenseLowLimit) + f2DenseLowLimit)) / (
-                    Bopt / 2 - DeltafMax + (abs(f2DenseLowLimit) + f2DenseLowLimit))
-            NlogLong = np.ceil(
-                np.log((fMax + (abs(f2DenseLowLimit) + f2DenseLowLimit)) / abs(f2DenseLowLimit)) * 1 / np.log(
+            k = b_opt / 2 / (b_opt / 2 - delta_f_max)
+            n_log_short = np.ceil(np.log(f_max / abs(f2dense_up_limit)) * 1 / np.log(k) + 1)
+            f2short = f2dense_up_limit * k ** (np.arange(1, n_log_short + 1, 1) - 1)
+            k = (b_opt / 2 + (abs(f2dense_low_limit) + f2dense_low_limit)) / (
+                    b_opt / 2 - delta_f_max + (abs(f2dense_low_limit) + f2dense_low_limit))
+            n_log_long = np.ceil(
+                np.log((f_max + (abs(f2dense_low_limit) + f2dense_low_limit)) / abs(f2dense_low_limit)) * 1 / np.log(
                     k) + 1)
-            f2Long = -(abs(f2DenseLowLimit) * k ** (np.arange(NlogLong, 0, -1) - 1)) + (
-                    abs(f2DenseLowLimit) + f2DenseLowLimit)
-            f2Array = np.array(list(f2Long) + list(f2ArrayDense[1:]) + list(f2Short))
+            f2long = -(abs(f2dense_low_limit) * k ** (np.arange(n_log_long, 0, -1) - 1)) + (
+                    abs(f2dense_low_limit) + f2dense_low_limit)
+            f2array = np.array(list(f2long) + list(f2_array_dense[1:]) + list(f2short))
 
-        return f2Array + f_central
+        return f2array + f_central
 
     def compute_nli(self, carrier, *carriers):
         """
@@ -185,7 +179,8 @@ class NLI:
             (min(carriers, key=attrgetter('frequency')).baud_rate / 2)
         num_samples = int((stop_frequency_psd - start_frequency_psd) / f_resolution) + 1
         frequency_psd = np.array([start_frequency_psd + ii * f_resolution for ii in range(0, num_samples)])
-        frequency_psd = np.arange(min(frequency_rho),max(frequency_rho),f_resolution)
+        frequency_psd = np.arange(min(frequency_rho) - f_resolution, max(frequency_rho) + f_resolution, f_resolution)
+
         psd = ut.raised_cosine_comb(frequency_psd, *carriers)
         f1_array = frequency_psd
         f2_array = frequency_psd
@@ -195,7 +190,6 @@ class NLI:
 
         # Interpolation of SRS gain/loss profile
         rho_function = interp1d(frequency_rho, rho, axis=0, fill_value='extrapolate')
-
 
         rho_1 = rho_function(f1_array)
 
@@ -213,20 +207,20 @@ class NLI:
         for f_ind, f1 in enumerate(f1_array):  # loop over f1
             if g1[f_ind] == 0:
                 continue
-            f2_array = self.compute_dense_regimes(f1,f_eval,frequency_psd,len_carriers,alpha0,beta2)
+            f2_array = self._compute_dense_regimes(f1, f_eval, frequency_psd, len_carriers, alpha0, beta2)
             f3_array = f1 + f2_array - f_eval
             g2 = ut.raised_cosine_comb(f2_array, *carriers)
+
             g3 = ut.raised_cosine_comb(f3_array, *carriers)
             ggg = g2 * g3 * g1[f_ind]
-
 
             if np.count_nonzero(ggg):
                 delta_beta = 4 * np.pi ** 2 * (f1 - f_eval) * (f2_array - f_eval) * \
                              (beta2 + np.pi * beta3 * (f1 + f2_array))
+                
                 rho_2 = rho_function(f2_array)
                 rho_3 = rho_function(f3_array)
                 delta_rho = rho_1[f_ind, :] * rho_2 * rho_3 / rho_f
-
 
                 fwm_eff = self._fwm_efficiency(delta_beta, delta_rho, z, alpha0)  # compute FWM efficiency
 
@@ -250,7 +244,9 @@ class NLI:
         fwm_eff = (delta_rho[:,-1]*np.exp(w*z[-1])-delta_rho[:,0]*np.exp(w*z[0]))/w
         for z_ind in range(0, len(z) - 1):
             derivative_rho = (delta_rho[:, z_ind + 1] - delta_rho[:, z_ind]) / (z[z_ind + 1] - z[z_ind])
-            fwm_eff -= derivative_rho * (np.exp(w*z[z_ind +1])-np.exp(w*z[z_ind]))/(w**2)
+
+            fwm_eff -= derivative_rho * (np.exp(w*z[z_ind + 1])-np.exp(w*z[z_ind]))/(w**2)
+
         fwm_eff = np.abs(fwm_eff) ** 2
 
         return fwm_eff

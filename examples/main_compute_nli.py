@@ -24,14 +24,16 @@ def raman_gain_efficiency_from_csv(csv_file_name):
     return cr, frequency_cr
 
 
-def main(fiber_information, spectral_information, raman_solver, model_params):
+def main(fiber_information, spectral_information, raman_solver, model_params, cut_list):
+    raman_solver.stimulated_raman_scattering  # Compute SRS profile
+    
     nlint = nli.NLI(fiber_information=fiber_information)
     nlint.srs_profile = raman_solver
     nlint.model_parameters = model_params
 
-
     carriers_nli = [nlint.compute_nli(carrier, *spectral_information.carriers)
-                    for carrier in spectral_information.carriers]
+                    for carrier in spectral_information.carriers
+                    if carrier.channel_number in cut_list]
 
     return carriers_nli
 
@@ -42,7 +44,7 @@ if __name__ == '__main__':
     cr_file_name = './raman_gain_efficiency/SSMF.csv'
     cr, frequency_cr = raman_gain_efficiency_from_csv(cr_file_name)
 
-    fiber_length = np.array([100e3])
+    fiber_length = np.array([75e3])
     attenuation_coefficient_p = np.array([0.046e-3])
     frequency_attenuation = np.array([193.5e12])
 
@@ -53,18 +55,13 @@ if __name__ == '__main__':
     # WDM COMB PARAMETERS
     num_channels = 91
     delta_f = 50e9
-    pch = 1e-3
+    pch = 0.5e-3
 
+    cut_list = range(5, num_channels, 5)
+  
     roll_off = 0.1
     symbol_rate = 32e9
     start_f = 191.0e12
-
-    # RAMAN PUMP PARAMETERS
-    pump_pow = [150e-3, 250e-3, 150e-3, 250e-3, 200e-3]
-    pump_freq = [200.2670e12, 201.6129e12, 207.1823e12, 208.6231e12, 210.0840e12]
-    pump_bandwidth = [1e6, 1e6, 1e6, 1e6, 1e6]
-    prop_direction = [-1, -1, -1, -1, -1]
-    num_pumps = len(pump_pow)
 
     # ODE SOLVER PARAMETERS
     z_resolution = 1e3
@@ -79,8 +76,8 @@ if __name__ == '__main__':
     NpointsPerSlotMax = 5000 / 5
     Deltaf = 50e9
     minFWMinv = 1E6
-    dense_regime = namedtuple('Dense regime parameters', 'NpointsPerSlotMin NpointsPerSlotMax Deltaf minFWMinv')
-    dense_regime = dense_regime(NpointsPerSlotMin=NpointsPerSlotMin,NpointsPerSlotMax=NpointsPerSlotMax, Deltaf=Deltaf, minFWMinv=minFWMinv)
+    dense_regime = namedtuple('Dense regime parameters', 'n_points_per_slot_min n_points_per_slot_max delta_f min_fwm_inv')
+    dense_regime = dense_regime(n_points_per_slot_min=n_points_per_slot_min, n_points_per_slot_max=n_points_per_slot_max, delta_f=delta_f, min_fwm_inv=min_fwm_inv)
 
     # FIBER
     fiber_info = namedtuple('FiberInformation', 'length attenuation_coefficient raman_coefficient beta2 beta3 gamma')
@@ -101,13 +98,6 @@ if __name__ == '__main__':
                      for ii in range(0, num_channels))
     spectrum = spectral_information(carriers=carriers)
 
-    # RAMAN PUMPS
-    raman_pump_information = namedtuple('SpectralInformation', 'raman_pumps')
-    pump = namedtuple('RamanPump', 'pump_number power frequency propagation_direction pump_bandwidth')
-    pumps = tuple(pump(1 + ii, pump_pow[ii], pump_freq[ii], prop_direction[ii], pump_bandwidth[ii])
-                  for ii in range(0, num_pumps))
-    raman_pumps = raman_pump_information(raman_pumps=pumps)
-
     # SOLVER PARAMETERS
     raman_solver_information = namedtuple('RamanSolverInformation', ' z_resolution tolerance verbose')
     solver_parameters = raman_solver_information(z_resolution=z_resolution,
@@ -119,14 +109,15 @@ if __name__ == '__main__':
 
     raman_solver = rm.RamanSolver(fiber)
     raman_solver.spectral_information = spectrum
-    raman_solver.raman_pump_information = raman_pumps
     raman_solver.solver_params = solver_parameters
 
-    carriers_nli = main(fiber, spectrum, raman_solver, model_params)
+    carriers_nli = main(fiber, spectrum, raman_solver, model_params, cut_list)
 
     # PLOT RESULTS
-    p_cut = [carrier.power.signal for carrier in sorted(spectrum.carriers, key=attrgetter('frequency'))]
-    f_cut = [carrier.frequency for carrier in sorted(spectrum.carriers, key=attrgetter('frequency'))]
+    p_cut = [carrier.power.signal for carrier in sorted(spectrum.carriers, key=attrgetter('frequency'))
+             if carrier.channel_number in cut_list]
+    f_cut = [carrier.frequency for carrier in sorted(spectrum.carriers, key=attrgetter('frequency'))
+             if carrier.channel_number in cut_list]
 
     rho_end = interp1d(raman_solver.stimulated_raman_scattering.frequency, raman_solver.stimulated_raman_scattering.rho[:,-1])
     p_cut = np.array(p_cut) * (rho_end(f_cut))**2

@@ -49,7 +49,7 @@ def test_nli_parameters():
     assert nli_model.nli_parameters.verbose == verbose
 
 @pytest.mark.parametrize("delta_beta, x_talk, delta_rho_fun", [(3,[1E-3, 1],"linear"),(1E+3,[-1E-3,0],"linear"),(1E-3,[-1E-3,0],"exponential")])#,(0,1E-3,"exponential"),(1E-3,-1E-4,"exponential")])
-def test_nli_fwm_efficiency(delta_beta,x_talk,delta_rho_fun):
+def test_nli_fwm_efficiency(delta_beta, x_talk, delta_rho_fun):
 
     NLI = nli.NLI
 
@@ -83,23 +83,70 @@ def test_nli_fwm_efficiency(delta_beta,x_talk,delta_rho_fun):
 
     npt.assert_allclose(calculed,expected,rtol=1E-5)
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+# def test_nli():
+#
+#     # FIBER PARAMETERS
+#     fiber_information = namedtuple('FiberInformation', 'length attenuation_coefficient raman_coefficient beta2 beta3 gamma')
+#     attenuation_coefficient_p = namedtuple('Attenuation_coeff','alpha_power')
+#     attenuation_coefficient_p.alpha_power = np.array([np.log(10) * 0.18895E-3 / 10])
+#     fiber_information.attenuation_coefficient = attenuation_coefficient_p
+#     fiber_information.beta2 = -21.27e-27  # s^2/m
+#     fiber_information.beta3 = beta3 = 0  # s^3/m
+#     fiber_information.gamma = 1.3e-3  # 1/W/m
+#
+#     model_parameters = namedtuple('NLIParameters', 'method frequency_resolution verbose')
+#     model_parameters.method = 'ggn_integral'
+#     model_parameters.frequency_resolution = 1e9
+#     model_parameters.verbose = False
+#
+#     # WDM COMB PARAMETERS
+#     roll_off = 0.1
+#     symbol_rate = 32e9
+#
+#     # SPECTRUM
+#     spectral_information = namedtuple('SpectralInformation', 'carriers')
+#     channel = namedtuple('Channel', 'channel_number frequency baud_rate roll_off power')
+#     power = namedtuple('Power', 'signal nonlinear_interference amplified_spontaneous_emission')
+#
+#     csv_files_dir = './tests/resources/'
+#     f_axis = (1E+12) * np.loadtxt(open(csv_files_dir + 'f_axis.csv', 'rb'), delimiter=',')
+#     z_array = (1E+3) * np.loadtxt(open(csv_files_dir + 'z_array.csv', 'rb'), delimiter=',')
+#     rho = np.loadtxt(open(csv_files_dir + 'raman_profile.csv'), delimiter=',')
+#     A = np.exp((-attenuation_coefficient_p.alpha_power / 2) * z_array)
+#     for i in range(len(rho)):
+#         rho[i] = np.multiply(rho[i], A)
+#     f_channel = (1E+12) * np.loadtxt(open(csv_files_dir + 'f_channel.csv', 'rb'), delimiter=',')
+#     f_channel = f_channel[range(11)]
+#     l = len(f_channel)
+#     cut_number = [*range(1,l+1)]
+#     pch = 0.50119E-03 * np.ones(l)
+#     channel_numbers = range(l)
+#     carriers = tuple(channel(i + 1, f_channel[i], symbol_rate, roll_off, power(pch[i], 0, 0)) for i in channel_numbers)
+#     spectrum = spectral_information(carriers=carriers)
+#     raman_solver = namedtuple('RamanSolver', 'stimulated_raman_scattering spectral_information')
+#     raman_solver.spectral_information = spectrum
+#     stimulated_raman_scattering = namedtuple('stimulated_raman_scattering', ' rho z frequency ')
+#     stimulated_raman_scattering = stimulated_raman_scattering(rho=rho, z=z_array, frequency=f_axis)
+#     raman_solver = raman_solver(stimulated_raman_scattering=stimulated_raman_scattering, spectral_information=spectrum)
+#
+#     nlint = nli.NLI(fiber_information=fiber_information)
+#     nlint.srs_profile = raman_solver
+#     nlint.model_parameters = model_parameters
+#
+#     # Compute RAMAN SRS
+#     rho_end = interp1d(raman_solver.stimulated_raman_scattering.frequency,
+#                        raman_solver.stimulated_raman_scattering.rho[:, -1])
+#
+#     # OUTPUT VS EXPECTED
+#     expected_snr_nl = [35.642634, 35.212572, 35.010348, 34.879301, 34.785609, 34.733054,
+#                        34.704074, 34.710039, 34.758298, 34.891119, 35.27643]
+#     counter = 0
+#     for carrier in carriers:
+#         if carrier.channel_number in cut_number:
+#             carrier_nli = nlint.compute_nli(carrier, *carriers)
+#             p_cut = carrier.power.signal
+#             f_cut = carrier.frequency
+#             p_cut = np.array(p_cut) * (rho_end(f_cut)) ** 2
+#             snr_nl = 10 * np.log10(p_cut / carrier_nli)
+#             npt.assert_allclose(snr_nl, expected_snr_nl[counter], rtol=1E-6)
+#             counter += 1

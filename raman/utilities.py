@@ -23,11 +23,12 @@ def compute_power_spectrum(spectral_information, raman_pump_information):
     propagation_direction = np.ones(len(f_array))
 
     # Raman pump power spectrum
-    for pump in raman_pump_information.raman_pumps:
-        pow_array = np.append(pow_array, pump.power)
-        f_array = np.append(f_array, pump.frequency)
-        propagation_direction = np.append(propagation_direction, pump.propagation_direction)
-        noise_bandwidth_array = np.append(noise_bandwidth_array, pump.pump_bandwidth)
+    if raman_pump_information:
+        for pump in raman_pump_information.raman_pumps:
+            pow_array = np.append(pow_array, pump.power)
+            f_array = np.append(f_array, pump.frequency)
+            propagation_direction = np.append(propagation_direction, pump.propagation_direction)
+            noise_bandwidth_array = np.append(noise_bandwidth_array, pump.pump_bandwidth)
 
     # Final sorting
     ind = np.argsort(f_array)
