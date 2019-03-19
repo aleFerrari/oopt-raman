@@ -97,7 +97,7 @@ if __name__ == '__main__':
   # SOLVER PARAMETERS
   raman_solver_information = namedtuple('RamanSolverInformation', 'z_resolution tolerance verbose')
   solver_parameters = raman_solver_information(z_resolution=z_resolution, tolerance=tolerance, verbose=verbose)
-  
+
   gain_loss_profile, ase_profile = main(fiber, spectrum, raman_pumps, solver_parameters)
 
   z_rho = gain_loss_profile.z

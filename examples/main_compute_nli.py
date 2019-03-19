@@ -26,6 +26,7 @@ def raman_gain_efficiency_from_csv(csv_file_name):
 
 def main(fiber_information, spectral_information, raman_solver, model_params, cut_list):
     raman_solver.stimulated_raman_scattering  # Compute SRS profile
+    
     nlint = nli.NLI(fiber_information=fiber_information)
     nlint.srs_profile = raman_solver
     nlint.model_parameters = model_params
@@ -43,7 +44,7 @@ if __name__ == '__main__':
     cr_file_name = './raman_gain_efficiency/SSMF.csv'
     cr, frequency_cr = raman_gain_efficiency_from_csv(cr_file_name)
 
-    fiber_length = np.array([100e3])
+    fiber_length = np.array([75e3])
     attenuation_coefficient_p = np.array([0.046e-3])
     frequency_attenuation = np.array([193.5e12])
 
@@ -54,7 +55,7 @@ if __name__ == '__main__':
     # WDM COMB PARAMETERS
     num_channels = 91
     delta_f = 50e9
-    pch = 1e-3
+    pch = 0.5e-3
 
     cut_list = range(5, num_channels, 5)
   
