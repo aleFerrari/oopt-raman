@@ -44,7 +44,7 @@ if __name__ == '__main__':
     cr_file_name = './raman_gain_efficiency/SSMF.csv'
     cr, frequency_cr = raman_gain_efficiency_from_csv(cr_file_name)
 
-    fiber_length = np.array([100e3])
+    fiber_length = np.array([75e3])
     attenuation_coefficient_p = np.array([0.046e-3])
     frequency_attenuation = np.array([193.5e12])
 
@@ -55,7 +55,7 @@ if __name__ == '__main__':
     # WDM COMB PARAMETERS
     num_channels = 91
     delta_f = 50e9
-    pch = 1e-3
+    pch = 0.5e-3
 
     cut_list = range(5, num_channels, 5)
   
