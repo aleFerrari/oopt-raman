@@ -47,7 +47,7 @@ class NLI:
         """
         self._model_parameters = model_params
 
-    def compute_dense_regimes(self, f1, f_eval,frequency_psd,len_carriers):
+    def _compute_dense_regimes(self, f1, f_eval, frequency_psd, len_carriers):
         f_central = min(frequency_psd) + (max(frequency_psd) - min(frequency_psd)) / 2
         frequency_psd = frequency_psd - f_central
         f_eval = f_eval - f_central
@@ -207,7 +207,7 @@ class NLI:
         for f_ind, f1 in enumerate(f1_array):  # loop over f1
             if g1[f_ind] == 0:
                 continue
-            f2_array = self._compute_dense_regimes(f1, f_eval, frequency_psd, len_carriers, alpha0, beta2)
+            f2_array = self._compute_dense_regimes(f1, f_eval, frequency_psd, len_carriers)
             f3_array = f1 + f2_array - f_eval
             g2 = ut.raised_cosine_comb(f2_array, *carriers)
 
