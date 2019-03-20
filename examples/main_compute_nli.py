@@ -76,7 +76,7 @@ if __name__ == '__main__':
     n_points_per_slot_max = 5000 / 5
     delta_f = 50e9
     min_fwm_inv = 1E6
-    dense_regime = namedtuple('Dense regime parameters', 'n_points_per_slot_min n_points_per_slot_max delta_f min_fwm_inv')
+    dense_regime = namedtuple('DenseRegimeParameters', 'n_points_per_slot_min n_points_per_slot_max delta_f min_fwm_inv')
     dense_regime = dense_regime(n_points_per_slot_min=n_points_per_slot_min, n_points_per_slot_max=n_points_per_slot_max, delta_f=delta_f, min_fwm_inv=min_fwm_inv)
 
     # FIBER
