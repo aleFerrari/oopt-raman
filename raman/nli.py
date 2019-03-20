@@ -5,7 +5,7 @@
 This module contains the class NLI to compute the nonlinear interference introduced by the fiber.
 @Author: Alessio Ferrari
 """
-#import progressbar
+import progressbar
 import numpy as np
 import raman.utilities as ut
 from operator import attrgetter
