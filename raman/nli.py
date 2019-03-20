@@ -5,7 +5,7 @@
 This module contains the class NLI to compute the nonlinear interference introduced by the fiber.
 @Author: Alessio Ferrari
 """
-import progressbar
+#import progressbar
 import numpy as np
 import raman.utilities as ut
 from operator import attrgetter
@@ -57,8 +57,7 @@ class NLI:
         n_points_per_slot_min = dense_regime.n_points_per_slot_min
         n_points_per_slot_max = dense_regime.n_points_per_slot_max
         delta_f = dense_regime.delta_f
-        min_fwm_inv = 10 ** (dense_regime.min_fwm_inv / 10)
-
+        min_fwm_inv = dense_regime.min_fwm_inv
         delta_f_min = delta_f / n_points_per_slot_min
         delta_f_max = delta_f / n_points_per_slot_max
         b_opt = max([len_carriers * delta_f, max(frequency_psd) - min(frequency_psd) + delta_f])
