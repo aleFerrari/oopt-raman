@@ -72,10 +72,10 @@ if __name__ == '__main__':
     f_resolution_nli = 2e9
     verbose_nli = 1
     method_nli = 'ggn_integral'
-    NpointsPerSlotMin = 4
-    NpointsPerSlotMax = 5000 / 5
-    Deltaf = 50e9
-    minFWMinv = 1E6
+    n_points_per_slot_min = 4
+    n_points_per_slot_max = 5000 / 5
+    delta_f = 50e9
+    min_fwm_inv = 1E6
     dense_regime = namedtuple('Dense regime parameters', 'n_points_per_slot_min n_points_per_slot_max delta_f min_fwm_inv')
     dense_regime = dense_regime(n_points_per_slot_min=n_points_per_slot_min, n_points_per_slot_max=n_points_per_slot_max, delta_f=delta_f, min_fwm_inv=min_fwm_inv)
 

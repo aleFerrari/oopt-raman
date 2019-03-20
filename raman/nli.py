@@ -62,7 +62,7 @@ class NLI:
         delta_f_min = delta_f / n_points_per_slot_min
         delta_f_max = delta_f / n_points_per_slot_max
         b_opt = max([len_carriers * delta_f, max(frequency_psd) - min(frequency_psd) + delta_f])
-        fMax = 0.6 * b_opt
+        f_max = 0.6 * b_opt
         alpha_e = (self.fiber_information.attenuation_coefficient.alpha_power / 2)
         beta2 = self.fiber_information.beta2
 
