@@ -57,7 +57,7 @@ class NLI:
         n_points_per_slot_min = dense_regime.n_points_per_slot_min
         n_points_per_slot_max = dense_regime.n_points_per_slot_max
         delta_f = dense_regime.delta_f
-        min_fwm_inv = dense_regime.min_fwm_inv
+        min_fwm_inv = 10 ** (dense_regime.min_fwm_inv/10)
         delta_f_min = delta_f / n_points_per_slot_min
         delta_f_max = delta_f / n_points_per_slot_max
         b_opt = max([len_carriers * delta_f, max(frequency_psd) - min(frequency_psd) + delta_f])
@@ -65,13 +65,17 @@ class NLI:
         alpha_e = (self.fiber_information.attenuation_coefficient.alpha_power / 2)
         beta2 = self.fiber_information.beta2
 
-        f2dense_up_limit = max(
-            [f_eval + np.sqrt(alpha_e ** 2 / (4 * (np.pi ** 4) * (beta2 ** 2)) * (min_fwm_inv - 1)) / (f1 - f_eval),
-             f_eval - np.sqrt(alpha_e ** 2 / (4 * (np.pi ** 4) * (beta2 ** 2)) * (min_fwm_inv - 1)) / (f1 - f_eval)])
-        # Limit on f2 based on classic FWM
-        f2dense_low_limit = min(
-            [f_eval + np.sqrt(alpha_e ** 2 / (4 * (np.pi ** 4) * (beta2 ** 2)) * (min_fwm_inv - 1)) / (f1 - f_eval),
-             f_eval - np.sqrt(alpha_e ** 2 / (4 * (np.pi ** 4) * (beta2 ** 2)) * (min_fwm_inv - 1)) / (f1 - f_eval)])
+        if f1 == f_eval:
+            f2dense_low_limit = -f_max
+            f2dense_up_limit = f_max
+        else:
+            f2dense_up_limit = max(
+                [f_eval + np.sqrt(alpha_e ** 2 / (4 * (np.pi ** 4) * (beta2 ** 2)) * (min_fwm_inv - 1)) / (f1 - f_eval),
+                 f_eval - np.sqrt(alpha_e ** 2 / (4 * (np.pi ** 4) * (beta2 ** 2)) * (min_fwm_inv - 1)) / (f1 - f_eval)])
+            # Limit on f2 based on classic FWM
+            f2dense_low_limit = min(
+                [f_eval + np.sqrt(alpha_e ** 2 / (4 * (np.pi ** 4) * (beta2 ** 2)) * (min_fwm_inv - 1)) / (f1 - f_eval),
+                 f_eval - np.sqrt(alpha_e ** 2 / (4 * (np.pi ** 4) * (beta2 ** 2)) * (min_fwm_inv - 1)) / (f1 - f_eval)])
 
         if f2dense_low_limit == 0:
             f2dense_low_limit = -delta_f_min
