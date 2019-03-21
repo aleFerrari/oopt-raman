@@ -11,7 +11,6 @@ import raman.utilities as ut
 from operator import attrgetter
 from scipy.interpolate import interp1d
 
-
 class NLI:
 
     def __init__(self, fiber_information=None):
@@ -48,32 +47,35 @@ class NLI:
         """
         self._model_parameters = model_params
 
-    def _compute_dense_regimes(self, f1, f_eval, frequency_psd, len_carriers, alpha0, beta2):
-
+    def _compute_dense_regimes(self, f1, f_eval, frequency_psd, len_carriers):
         f_central = min(frequency_psd) + (max(frequency_psd) - min(frequency_psd)) / 2
         frequency_psd = frequency_psd - f_central
         f_eval = f_eval - f_central
         f1 = f1 - f_central
 
-        n_points_per_slot_min = 4
-        n_points_per_slot_max = 5000
-
-        delta_f = 50e9
-
-        delta_f_min = delta_f / n_points_per_slot_max
-        delta_f_max = delta_f / n_points_per_slot_min
+        dense_regime = self.model_parameters.dense_regime
+        n_points_per_slot_min = dense_regime.n_points_per_slot_min
+        n_points_per_slot_max = dense_regime.n_points_per_slot_max
+        delta_f = dense_regime.delta_f
+        min_fwm_inv = 10 ** (dense_regime.min_fwm_inv/10)
+        delta_f_min = delta_f / n_points_per_slot_min
+        delta_f_max = delta_f / n_points_per_slot_max
         b_opt = max([len_carriers * delta_f, max(frequency_psd) - min(frequency_psd) + delta_f])
         f_max = 0.6 * b_opt
-        min_fwm_inv = 1E6
-        alpha_e = (alpha0 / 2)
+        alpha_e = (self.fiber_information.attenuation_coefficient.alpha_power / 2)
+        beta2 = self.fiber_information.beta2
 
-        f2dense_up_limit = max(
-            [f_eval + np.sqrt(alpha_e ** 2 / (4 * (np.pi ** 4) * (beta2 ** 2)) * (min_fwm_inv - 1)) / (f1 - f_eval),
-             f_eval - np.sqrt(alpha_e ** 2 / (4 * (np.pi ** 4) * (beta2 ** 2)) * (min_fwm_inv - 1)) / (f1 - f_eval)])
-        # Limit on f2 based on classic FWM
-        f2dense_low_limit = min(
-            [f_eval + np.sqrt(alpha_e ** 2 / (4 * (np.pi ** 4) * (beta2 ** 2)) * (min_fwm_inv - 1)) / (f1 - f_eval),
-             f_eval - np.sqrt(alpha_e ** 2 / (4 * (np.pi ** 4) * (beta2 ** 2)) * (min_fwm_inv - 1)) / (f1 - f_eval)])
+        if f1 == f_eval:
+            f2dense_low_limit = -f_max
+            f2dense_up_limit = f_max
+        else:
+            f2dense_up_limit = max(
+                [f_eval + np.sqrt(alpha_e ** 2 / (4 * (np.pi ** 4) * (beta2 ** 2)) * (min_fwm_inv - 1)) / (f1 - f_eval),
+                 f_eval - np.sqrt(alpha_e ** 2 / (4 * (np.pi ** 4) * (beta2 ** 2)) * (min_fwm_inv - 1)) / (f1 - f_eval)])
+            # Limit on f2 based on classic FWM
+            f2dense_low_limit = min(
+                [f_eval + np.sqrt(alpha_e ** 2 / (4 * (np.pi ** 4) * (beta2 ** 2)) * (min_fwm_inv - 1)) / (f1 - f_eval),
+                 f_eval - np.sqrt(alpha_e ** 2 / (4 * (np.pi ** 4) * (beta2 ** 2)) * (min_fwm_inv - 1)) / (f1 - f_eval)])
 
         if f2dense_low_limit == 0:
             f2dense_low_limit = -delta_f_min
@@ -180,14 +182,12 @@ class NLI:
             (min(carriers, key=attrgetter('frequency')).baud_rate / 2)
         num_samples = int((stop_frequency_psd - start_frequency_psd) / f_resolution) + 1
         frequency_psd = np.array([start_frequency_psd + ii * f_resolution for ii in range(0, num_samples)])
-
         frequency_psd = np.arange(min(frequency_rho) - f_resolution, max(frequency_rho) + f_resolution, f_resolution)
 
         psd = ut.raised_cosine_comb(frequency_psd, *carriers)
         f1_array = frequency_psd
         f2_array = frequency_psd
         len_carriers = len(carriers)
-
         g1 = psd
         g2 = psd
 
@@ -208,10 +208,9 @@ class NLI:
         # NLI computation
         integrand_f1 = np.zeros(f1_array.size)  # pre-allocate partial result for inner integral
         for f_ind, f1 in enumerate(f1_array):  # loop over f1
-
             if g1[f_ind] == 0:
                 continue
-            f2_array = self._compute_dense_regimes(f1, f_eval, frequency_psd, len_carriers, alpha0, beta2)
+            f2_array = self._compute_dense_regimes(f1, f_eval, frequency_psd, len_carriers)
             f3_array = f1 + f2_array - f_eval
             g2 = ut.raised_cosine_comb(f2_array, *carriers)
 
