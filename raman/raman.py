@@ -20,8 +20,8 @@ class RamanSolver:
     """ RamanSolver computes the stimulated Raman scattering and the spontaneous 
     Raman scattering in optical communication systems.
     For more details:
-     Bromage, Jake. "Raman amplification for fiber communications systems."
-     Journal of Lightwave Technology 22.1 (2004): 79.
+      Bromage, Jake. "Raman amplification for fiber communications systems."
+      Journal of Lightwave Technology 22.1 (2004): 79.
     """
 
 
