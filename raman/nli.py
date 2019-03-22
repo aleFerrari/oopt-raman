@@ -277,6 +277,27 @@ class NLI:
 
         return generalized_rho_nli
 
+    # Methods for computing spectrally separated GN
+    def _gn_analytic(self, carrier, *carriers):
+        """ Computes the nonlinear interference power on a single carrier.
+        The method uses eq. 120 from arXiv:1209.0394.
+        :param carrier: the signal under analysis
+        :param carriers: the full WDM comb
+        :return: carrier_nli: the amount of nonlinear interference in W on the under analysis
+        """
+
+        g_nli = 0
+        for interfering_carrier in carriers:
+            psi = self._psi(carrier, interfering_carrier)
+            g_nli += (interfering_carrier.power.signal / interfering_carrier.baud_rate) ** 2 \
+                     * (carrier.power.signal / carrier.baud_rate) * psi
+
+        g_nli *= (16 / 27) * (self.gamma * self.effective_length) ** 2 \
+                 / (2 * np.pi * abs(self.beta2()) * self.asymptotic_length)
+
+        carrier_nli = carrier.baud_rate * g_nli
+        return carrier_nli
+
     # Methods for computing brute force GGN
     def _compute_ggn_integral(self, carrier, *carriers):
 
