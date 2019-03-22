@@ -51,6 +51,15 @@ class NLI:
         :param model_params: namedtuple containing the parameters used to compute the NLI.
         """
         self._model_parameters = model_params
+        
+    def alpha0(self, f_eval):
+        if len(self.fiber_information.attenuation_coefficient.alpha_power) == 1:
+            alpha0 = self.fiber_information.attenuation_coefficient.alpha_power[0]
+        else:
+            alpha_interp = interp1d(self.fiber_information.attenuation_coefficient.frequency,
+                                    self.fiber_information.attenuation_coefficient.alpha_power)
+            alpha0 = alpha_interp(f_eval)
+        return alpha0
 
     def _compute_dense_regimes(self, f1, f_eval, frequency_psd, len_carriers):
         f_central = min(frequency_psd) + (max(frequency_psd) - min(frequency_psd)) / 2
