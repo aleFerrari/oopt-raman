@@ -211,6 +211,12 @@ class NLI:
               2 * self._generalized_psi(carrier, carrier)
 
         return eta
+        
+    def _generalized_spectrally_separated_xpm(self, carrier_cut, pump_carrier):
+        eta = (16 / 27) * self.fiber_information.gamma**2 * pump_carrier.baud_rate**2 *\
+              self._generalized_psi(carrier_cut, pump_carrier)
+
+        return eta
 
     def _compute_ggn_integral(self, carrier, *carriers):
 
