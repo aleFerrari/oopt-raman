@@ -211,12 +211,56 @@ class NLI:
               2 * self._generalized_psi(carrier, carrier)
 
         return eta
-        
+
     def _generalized_spectrally_separated_xpm(self, carrier_cut, pump_carrier):
         eta = (16 / 27) * self.fiber_information.gamma**2 * pump_carrier.baud_rate**2 *\
               self._generalized_psi(carrier_cut, pump_carrier)
 
         return eta
+
+    def _generalized_psi(self, carrier_cut, pump_carrier):
+        """ It computes the generalized psi function similarly to the one used in the GN model
+
+        :return: generalized_psi
+        """
+        f_eval = carrier_cut.frequency
+
+        # Fiber parameters
+        alpha0 = self.alpha0(f_eval)
+        beta2 = self.fiber_information.beta2
+        beta3 = self.fiber_information.beta3
+
+        z = self.srs_profile.stimulated_raman_scattering.z
+        frequency_rho = self.srs_profile.stimulated_raman_scattering.frequency
+        rho = self.srs_profile.stimulated_raman_scattering.rho
+        rho = rho * np.exp(np.abs(alpha0) * z / 2)
+        rho_function = interp1d(frequency_rho, rho, axis=0, fill_value='extrapolate')
+        rho_pump = rho_function(pump_carrier.frequency)
+
+        f_resolution = self.model_parameters.frequency_resolution
+        f1_array = np.arange(pump_carrier.frequency - pump_carrier.baud_rate,
+                             pump_carrier.frequency + pump_carrier.baud_rate,
+                             f_resolution)
+        f2_array = np.arange(carrier_cut.frequency - carrier_cut.baud_rate,
+                             carrier_cut.frequency + carrier_cut.baud_rate,
+                             f_resolution)
+        psd1 = ut.raised_cosine_comb(f1_array, pump_carrier)
+        psd2 = ut.raised_cosine_comb(f2_array, carrier_cut)
+
+        integrand_f1 = np.zeros(len(f1_array))
+        for f1_index, (f1, psd1_sample) in enumerate(zip(f1_array, psd1)):
+            f3_array = f1 + f2_array - f_eval
+            psd3 = ut.raised_cosine_comb(f3_array, pump_carrier)
+            ggg = psd1_sample * psd2 * psd3
+
+            delta_beta = 4 * np.pi ** 2 * (f1 - f_eval) * (f2_array - f_eval) * \
+                         (beta2 + np.pi * beta3 * (f1 + f2_array))
+
+            integrand_f2 = ggg * self._generalized_rho_nli(delta_beta, rho_pump, z, alpha0)
+            integrand_f1[f1_index] = np.trapz(integrand_f2, f2_array)
+        generalized_psi = np.trapz(integrand_f1, f1_array)
+
+        return generalized_psi
 
     def _compute_ggn_integral(self, carrier, *carriers):
 
