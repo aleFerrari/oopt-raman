@@ -73,7 +73,7 @@ if __name__ == '__main__':
     verbose_nli = 1
     method_nli = 'ggn_integral'
     n_points_per_slot_min = 4
-    n_points_per_slot_max = 5000 / 5
+    n_points_per_slot_max = 5000 
     delta_f = 50e9
     min_fwm_inv = 60
     dense_regime = namedtuple('DenseRegimeParameters', 'n_points_per_slot_min n_points_per_slot_max delta_f min_fwm_inv')
