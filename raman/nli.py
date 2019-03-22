@@ -16,6 +16,7 @@ class NLI:
         Model and method can be specified in `self.model_parameters.method`.
         List of implemented methods:
         'GGN_integral': brute force triple integral solution
+        'GGN_spectrally_separated_xpm_spm': XPM plus SPM
     """
 
     def __init__(self, fiber_information=None):
