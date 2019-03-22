@@ -320,7 +320,7 @@ class NLI:
         f_eval = carrier.frequency
 
         # Fiber parameters
-        alpha0 = self.fiber_information.attenuation_coefficient.alpha_power
+        alpha0 = self.alpha0(f_eval)
         beta2 = self.fiber_information.beta2
         beta3 = self.fiber_information.beta3
         gamma = self.fiber_information.gamma
