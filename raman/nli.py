@@ -183,6 +183,7 @@ class NLI:
         return carrier_nli
 
     def _compute_eta_matrix(self, carrier_cut, *carriers):
+        # Matrix initialization
         eta_matrix = np.zeros(len(carriers), len(carriers))
 
         # GGN spectrally separated
