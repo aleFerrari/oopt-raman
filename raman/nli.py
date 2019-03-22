@@ -185,10 +185,10 @@ class NLI:
 
     def _compute_eta_matrix(self, carrier_cut, *carriers):
         # Matrix initialization
-        eta_matrix = np.zeros(shape=(len(carriers), len(carriers))
+        eta_matrix = np.zeros(shape=(len(carriers), len(carriers)))
 
-        # GGN spectrally separated
         if '_spm_xpm' in self.model_parameters.method.lower():
+            # GGN spectrally separated
             if 'ggn' in self.model_parameters.method.lower():
                 for pump_index, pump_carrier in enumerate(carriers):
                     if carrier_cut.channel_number == pump_index + 1:  # SPM
