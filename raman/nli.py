@@ -261,7 +261,20 @@ class NLI:
         generalized_psi = np.trapz(integrand_f1, f1_array)
 
         return generalized_psi
+        
+    @staticmethod
+    def _generalized_rho_nli(delta_beta, rho_pump, z, alpha0):
 
+        w = 1j * delta_beta - alpha0
+        generalized_rho_nli = (rho_pump[-1]**2 * np.exp(w * z[-1]) - rho_pump[0]**2 * np.exp(w * z[0])) / w
+        for z_ind in range(0, len(z) - 1):
+            derivative_rho = (rho_pump[z_ind + 1]**2 - rho_pump[z_ind]**2) / (z[z_ind + 1] - z[z_ind])
+
+            generalized_rho_nli -= derivative_rho * (np.exp(w * z[z_ind + 1]) - np.exp(w * z[z_ind])) / (w ** 2)
+
+        generalized_rho_nli = np.abs(generalized_rho_nli)**2
+
+        return generalized_rho_nli
     def _compute_ggn_integral(self, carrier, *carriers):
 
         # Verify if SRS profile is associated to SRS
