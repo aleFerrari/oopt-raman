@@ -206,6 +206,7 @@ class NLI:
 
         return eta_matrix
 
+    # Methods for computing spectrally separated GGN
     def _generalized_spectrally_separated_spm(self, carrier):
         eta = (16 / 27) * self.fiber_information.gamma**2 * carrier.baud_rate**2 *\
               2 * self._generalized_psi(carrier, carrier)
@@ -261,7 +262,7 @@ class NLI:
         generalized_psi = np.trapz(integrand_f1, f1_array)
 
         return generalized_psi
-        
+
     @staticmethod
     def _generalized_rho_nli(delta_beta, rho_pump, z, alpha0):
 
@@ -275,6 +276,8 @@ class NLI:
         generalized_rho_nli = np.abs(generalized_rho_nli)**2
 
         return generalized_rho_nli
+
+    # Methods for computing brute force GGN
     def _compute_ggn_integral(self, carrier, *carriers):
 
         # Verify if SRS profile is associated to SRS
