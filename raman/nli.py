@@ -12,6 +12,11 @@ from operator import attrgetter
 from scipy.interpolate import interp1d
 
 class NLI:
+    """ This class implements the NLI models.
+        Model and method can be specified in `self.model_parameters.method`.
+        List of implemented methods:
+        'GGN_integral': brute force triple integral solution
+    """
 
     def __init__(self, fiber_information=None):
         """ Initialize the fiber object with its physical parameters
