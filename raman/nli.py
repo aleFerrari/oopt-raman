@@ -182,6 +182,29 @@ class NLI:
 
         return carrier_nli
 
+    def _compute_eta_matrix(self, carrier_cut, *carriers):
+        eta_matrix = np.zeros(len(carriers), len(carriers))
+
+        # GGN spectrally separated
+        if '_spm_xpm' in self.model_parameters.method.lower():
+            if 'generalized' in self.model_parameters.method.lower():
+                for pump_index, pump_carrier in enumerate(carriers):
+                    if carrier_cut.channel_number == pump_index + 1:  # SPM
+                        eta_matrix[pump_index, pump_index] = self._generalized_spectrally_separated_spm(carrier_cut)
+                    else:  # XPM
+                        eta_matrix[pump_index, pump_index] = self._generalized_spectrally_separated_xpm(carrier_cut,
+                                                                                                        pump_carrier)
+            # GN spectrally separated
+            else:                                               
+                for pump_index, pump_carrier in enumerate(carriers):
+                    if carrier_cut.channel_number == pump_index + 1:  # SPM
+                        eta_matrix[pump_index, pump_index] = self._gn_spm(carrier_cut)
+                    else:  # XPM
+                        eta_matrix[pump_index, pump_index] = self._generalized_spectrally_separated_xpm(carrier_cut,
+                                                                                                        pump_carrier)
+
+        return eta_matrix
+
     def _compute_ggn_integral(self, carrier, *carriers):
 
         # Verify if SRS profile is associated to SRS
