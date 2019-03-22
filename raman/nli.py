@@ -298,6 +298,21 @@ class NLI:
         carrier_nli = carrier.baud_rate * g_nli
         return carrier_nli
 
+    def _psi(self, carrier, interfering_carrier):
+        """ Calculates eq. 123 from arXiv:1209.0394.
+        """
+        if carrier.num_chan == interfering_carrier.num_chan: # SCI
+            psi = np.arcsinh(0.5 * np.pi**2 * self.asymptotic_length
+                              * abs(self.fiber_information.beta2()) * carrier.baud_rate**2)
+        else: # XCI
+            delta_f = carrier.freq - interfering_carrier.freq
+            psi = np.arcsinh(np.pi**2 * self.asymptotic_length * abs(self.fiber_information.beta2())
+                                * carrier.baud_rate * (delta_f + 0.5 * interfering_carrier.baud_rate))
+            psi -= np.arcsinh(np.pi**2 * self.asymptotic_length * abs(self.fiber_information.beta2())
+                                 * carrier.baud_rate * (delta_f - 0.5 * interfering_carrier.baud_rate))
+
+        return psi
+
     # Methods for computing brute force GGN
     def _compute_ggn_integral(self, carrier, *carriers):
 
