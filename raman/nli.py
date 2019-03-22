@@ -325,13 +325,6 @@ class NLI:
         beta3 = self.fiber_information.beta3
         gamma = self.fiber_information.gamma
 
-        if len(self.fiber_information.attenuation_coefficient.alpha_power) == 1:
-            alpha0 = self.fiber_information.attenuation_coefficient.alpha_power[0]
-        else:
-            alpha_interp = interp1d(self.fiber_information.attenuation_coefficient.frequency,
-                                    self.fiber_information.attenuation_coefficient.alpha_power)
-            alpha0 = alpha_interp(f_eval)
-
         z = self.srs_profile.stimulated_raman_scattering.z
         frequency_rho = self.srs_profile.stimulated_raman_scattering.frequency
         rho = self.srs_profile.stimulated_raman_scattering.rho
