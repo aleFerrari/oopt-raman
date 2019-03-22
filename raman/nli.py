@@ -172,6 +172,16 @@ class NLI:
 
         return carrier_nli
 
+    @staticmethod
+    def _carrier_nli_from_eta_matrix(eta_matrix, carrier, *carriers):
+        carrier_nli = 0
+        for pump_carrier_1, eta_row in zip(carriers, eta_matrix):
+            for pump_carrier_2, eta in zip(carriers, eta_row):
+                carrier_nli += eta * pump_carrier_1.power.signal * pump_carrier_2.power.singal
+        carrier_nli *= carrier.power.signal
+
+        return carrier_nli
+
     def _compute_ggn_integral(self, carrier, *carriers):
 
         # Verify if SRS profile is associated to SRS
