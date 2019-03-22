@@ -178,7 +178,7 @@ class NLI:
         carrier_nli = 0
         for pump_carrier_1, eta_row in zip(carriers, eta_matrix):
             for pump_carrier_2, eta in zip(carriers, eta_row):
-                carrier_nli += eta * pump_carrier_1.power.signal * pump_carrier_2.power.singal
+                carrier_nli += eta * pump_carrier_1.power.signal * pump_carrier_2.power.signal
         carrier_nli *= carrier.power.signal
 
         return carrier_nli
