@@ -358,7 +358,7 @@ class NLI:
         if self.model_parameters.verbose:
             bar = progressbar.ProgressBar(maxval=len(f1_array),
                                           widgets=[progressbar.Bar('=', '[', ']'), ' ', progressbar.Percentage()])
-            print(' NLI computation on channel #{}'.format(carrier.channel_number))
+            print(f' NLI computation on channel #{carrier.channel_number}')
             bar.start()
 
         # NLI computation
