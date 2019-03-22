@@ -188,7 +188,7 @@ class NLI:
 
         # GGN spectrally separated
         if '_spm_xpm' in self.model_parameters.method.lower():
-            if 'generalized' in self.model_parameters.method.lower():
+            if 'ggn' in self.model_parameters.method.lower():
                 for pump_index, pump_carrier in enumerate(carriers):
                     if carrier_cut.channel_number == pump_index + 1:  # SPM
                         eta_matrix[pump_index, pump_index] = self._generalized_spectrally_separated_spm(carrier_cut)
