@@ -316,19 +316,6 @@ class NLI:
     # Methods for computing brute force GGN
     def _compute_ggn_integral(self, carrier, *carriers):
 
-        # Verify if SRS profile is associated to SRS
-        if len(carriers) != len(self.srs_profile.spectral_information.carriers):
-            raise ValueError('Number of carriers of `self.srs_profile` is {}, '
-                             'while number of carriers in `carriers` is {}. '
-                             'They must be the same'.format((len(self.srs_profile.spectral_information.carriers)),
-                                                            len(carriers)))
-
-        for index, srs_carrier in enumerate(self.srs_profile.spectral_information.carriers):
-            if (srs_carrier.power.signal != carriers[index].power.signal) or \
-             (srs_carrier.frequency != carriers[index].frequency):
-                raise ValueError('Carrier #{} of self.srs_profile does not match '
-                                 'with #{} carrier in *carriers'.format(carriers[index].channel_number,
-                                                                        srs_carrier.channel_number))
         # Channel under test
         f_eval = carrier.frequency
 
