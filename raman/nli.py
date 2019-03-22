@@ -51,7 +51,7 @@ class NLI:
         :param model_params: namedtuple containing the parameters used to compute the NLI.
         """
         self._model_parameters = model_params
-        
+
     def alpha0(self, f_eval):
         if len(self.fiber_information.attenuation_coefficient.alpha_power) == 1:
             alpha0 = self.fiber_information.attenuation_coefficient.alpha_power[0]
@@ -139,6 +139,20 @@ class NLI:
             f2array = np.array(list(f2long) + list(f2_array_dense[1:]) + list(f2short))
 
         return f2array + f_central
+
+    def _verify_srs_wdm_comb(self, *carriers):
+        """ Verify if SRS profile is associated to SRS
+        """
+        if len(carriers) != len(self.srs_profile.spectral_information.carriers):
+            raise ValueError(f'Number of carriers of `self.srs_profile` is '
+                             f'{len(self.srs_profile.spectral_information.carriers)},'
+                             f'while number of carriers in `carriers` is {len(carriers)}.')
+
+        for index, srs_carrier in enumerate(self.srs_profile.spectral_information.carriers):
+            if (srs_carrier.power.signal != carriers[index].power.signal) or \
+               (srs_carrier.frequency != carriers[index].frequency):
+                raise ValueError(f'Carrier #{carriers[index].channel_number} of self.srs_profile does not match '
+                                 f'with #{srs_carrier.channel_number} carrier in *carriers')
 
     def compute_nli(self, carrier, *carriers):
         """
