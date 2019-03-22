@@ -206,6 +206,12 @@ class NLI:
 
         return eta_matrix
 
+    def _generalized_spectrally_separated_spm(self, carrier):
+        eta = (16 / 27) * self.fiber_information.gamma**2 * carrier.baud_rate**2 *\
+              2 * self._generalized_psi(carrier, carrier)
+
+        return eta
+
     def _compute_ggn_integral(self, carrier, *carriers):
 
         # Verify if SRS profile is associated to SRS
