@@ -185,7 +185,7 @@ class NLI:
 
     def _compute_eta_matrix(self, carrier_cut, *carriers):
         # Matrix initialization
-        eta_matrix = np.zeros(len(carriers), len(carriers))
+        eta_matrix = np.zeros(shape=(len(carriers), len(carriers))
 
         # GGN spectrally separated
         if '_spm_xpm' in self.model_parameters.method.lower():
