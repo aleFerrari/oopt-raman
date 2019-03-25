@@ -184,27 +184,25 @@ class NLI:
         return carrier_nli
 
     def _compute_eta_matrix(self, carrier_cut, *carriers):
+
+        cut_index = carrier_cut.channel_number - 1
         # Matrix initialization
         eta_matrix = np.zeros(shape=(len(carriers), len(carriers)))
 
-        if '_spm_xpm' in self.model_parameters.method.lower():
-            # GGN spectrally separated
+        # SPM
+        if 'spm' in self.model_parameters.method.lower():
+            # spectrally separated GGN
+            if 'ggn' in self.model_parameters.method.lower():
+                eta_matrix[cut_index, cut_index] = self._generalized_spectrally_separated_spm(carrier_cut)
+
+        # XPM
+        if 'xpm' in self.model_parameters.method.lower():
+            # spectrally separated GGN
             if 'ggn' in self.model_parameters.method.lower():
                 for pump_index, pump_carrier in enumerate(carriers):
-                    if carrier_cut.channel_number == pump_index + 1:  # SPM
-                        eta_matrix[pump_index, pump_index] = self._generalized_spectrally_separated_spm(carrier_cut)
-                    else:  # XPM
+                    if not cut_index == pump_index:
                         eta_matrix[pump_index, pump_index] = self._generalized_spectrally_separated_xpm(carrier_cut,
                                                                                                         pump_carrier)
-            # GN spectrally separated
-            else:                                               
-                for pump_index, pump_carrier in enumerate(carriers):
-                    if carrier_cut.channel_number == pump_index + 1:  # SPM
-                        eta_matrix[pump_index, pump_index] = self._gn_spm(carrier_cut)
-                    else:  # XPM
-                        eta_matrix[pump_index, pump_index] = self._generalized_spectrally_separated_xpm(carrier_cut,
-                                                                                                        pump_carrier)
-
         return eta_matrix
 
     # Methods for computing spectrally separated GGN
