@@ -124,7 +124,7 @@ if __name__ == '__main__':
 
     rho_end = interp1d(raman_solver.stimulated_raman_scattering.frequency,
                        raman_solver.stimulated_raman_scattering.rho[:,-1])
-    p_cut = np.array(p_cut) * (rho_end(f_cut))**2
+    p_cut = np.array(p_cut) #* (rho_end(f_cut))**2
 
     snr_nl = p_cut / carriers_nli
 
