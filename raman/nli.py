@@ -203,9 +203,9 @@ class NLI:
             if 'ggn' in self.model_parameters.method.lower():
                 for pump_index, pump_carrier in enumerate(carriers):
                     if self.model_parameters.verbose:
-                        print(f'Start computing XPM on channel #{carrier_cut.channel_number} '
-                              f'from channel #{pump_carrier.channel_number}')
-                    if not cut_index == pump_index:
+                        if not (cut_index == pump_index):
+                            print(f'Start computing XPM on channel #{carrier_cut.channel_number} '
+                                  f'from channel #{pump_carrier.channel_number}')
                         eta_matrix[pump_index, pump_index] = self._generalized_spectrally_separated_xpm(carrier_cut,
                                                                                                         pump_carrier)
         return eta_matrix
