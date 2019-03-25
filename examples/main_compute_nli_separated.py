@@ -56,6 +56,7 @@ if __name__ == '__main__':
     gamma = 1.27e-3     # 1/W/m
     beta2 = 21.27e-27   # s^2/m
     beta3 = 0.0344e-39  # s^3/m
+    f_ref_beta = 19.35e12  # Hz
 
     # WDM COMB PARAMETERS
     num_channels = 91
@@ -87,14 +88,15 @@ if __name__ == '__main__':
                                 n_points_per_slot_max=n_points_per_slot_max, delta_f=delta_f, min_fwm_inv=min_fwm_inv)
 
     # FIBER
-    fiber_info = namedtuple('FiberInformation', 'length attenuation_coefficient raman_coefficient beta2 beta3 gamma')
+    fiber_info = namedtuple('FiberInformation', 'length attenuation_coefficient raman_coefficient '
+                                                'beta2 beta3 f_ref_beta gamma')
     attenuation_coefficient = namedtuple('AttenuationCoefficient', 'alpha_power frequency')
     raman_coefficient = namedtuple('RamanCoefficient', 'cr frequency')
 
     att_coeff = attenuation_coefficient(alpha_power=attenuation_coefficient_p, frequency=frequency_attenuation)
     raman_coeff = raman_coefficient(cr=cr, frequency=frequency_cr)
     fiber = fiber_info(length=fiber_length, attenuation_coefficient=att_coeff, raman_coefficient=raman_coeff,
-                                        gamma=gamma, beta2=beta2, beta3=beta3)
+                       gamma=gamma, beta2=beta2, beta3=beta3, f_ref_beta=f_ref_beta)
 
     # SPECTRUM
     spectral_information = namedtuple('SpectralInformation', 'carriers')
