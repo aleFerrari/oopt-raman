@@ -291,6 +291,14 @@ class NLI:
         :param carriers: the full WDM comb
         :return: carrier_nli: the amount of nonlinear interference in W on the under analysis
         """
+        alpha = self.alpha0(carrier.frequency) / 2
+        print(f'{alpha}')
+        length = self.fiber_information.length
+        effective_length = (1 - np.exp(-2 * alpha * length)) / (2 * alpha)
+        asymptotic_length = 1 / (2 * alpha)
+
+        beta2 = self.fiber_information.beta2
+        gamma = self.fiber_information.gamma
 
         g_nli = 0
         for interfering_carrier in carriers:
@@ -298,8 +306,8 @@ class NLI:
             g_nli += (interfering_carrier.power.signal / interfering_carrier.baud_rate) ** 2 \
                      * (carrier.power.signal / carrier.baud_rate) * psi
 
-        g_nli *= (16 / 27) * (self.gamma * self.effective_length) ** 2 \
-                 / (2 * np.pi * abs(self.beta2()) * self.asymptotic_length)
+        g_nli *= (16 / 27) * (gamma * effective_length) ** 2 \
+                 / (2 * np.pi * abs(beta2) * asymptotic_length)
 
         carrier_nli = carrier.baud_rate * g_nli
         return carrier_nli
@@ -307,15 +315,19 @@ class NLI:
     def _psi(self, carrier, interfering_carrier):
         """ Calculates eq. 123 from arXiv:1209.0394.
         """
-        if carrier.num_chan == interfering_carrier.num_chan: # SCI
-            psi = np.arcsinh(0.5 * np.pi**2 * self.asymptotic_length
-                              * abs(self.fiber_information.beta2()) * carrier.baud_rate**2)
-        else: # XCI
-            delta_f = carrier.freq - interfering_carrier.freq
-            psi = np.arcsinh(np.pi**2 * self.asymptotic_length * abs(self.fiber_information.beta2())
-                                * carrier.baud_rate * (delta_f + 0.5 * interfering_carrier.baud_rate))
-            psi -= np.arcsinh(np.pi**2 * self.asymptotic_length * abs(self.fiber_information.beta2())
-                                 * carrier.baud_rate * (delta_f - 0.5 * interfering_carrier.baud_rate))
+        alpha = self.alpha0(carrier.frequency) / 2
+        beta2 = self.fiber_information.beta2
+
+        asymptotic_length = 1 / (2 * alpha)
+        if carrier.channel_number == interfering_carrier.channel_number:  # SCI
+            psi = np.arcsinh(0.5 * np.pi**2 * asymptotic_length
+                              * abs(beta2) * carrier.baud_rate**2)
+        else:  # XCI
+            delta_f = carrier.frequency - interfering_carrier.frequency
+            psi = np.arcsinh(np.pi**2 * asymptotic_length * abs(beta2) *
+                             carrier.baud_rate * (delta_f + 0.5 * interfering_carrier.baud_rate))
+            psi -= np.arcsinh(np.pi**2 * asymptotic_length * abs(beta2) *
+                              carrier.baud_rate * (delta_f - 0.5 * interfering_carrier.baud_rate))
 
         return psi
 
