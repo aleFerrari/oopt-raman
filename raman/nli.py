@@ -234,6 +234,7 @@ class NLI:
         alpha0 = self.alpha0(f_eval)
         beta2 = self.fiber_information.beta2
         beta3 = self.fiber_information.beta3
+        f_ref_beta = self.fiber_information.f_ref_beta
 
         z = self.srs_profile.stimulated_raman_scattering.z
         frequency_rho = self.srs_profile.stimulated_raman_scattering.frequency
@@ -259,8 +260,8 @@ class NLI:
             psd3 = ut.raised_cosine_comb(f3_array, pump_carrier)
             ggg = psd1_sample * psd2 * psd3
 
-            delta_beta = 4 * np.pi ** 2 * (f1 - f_eval) * (f2_array - f_eval) * \
-                         (beta2 + np.pi * beta3 * (f1 + f2_array))
+            delta_beta = 4 * np.pi**2 * (f1 - f_eval) * (f2_array - f_eval) * \
+                         (beta2 + np.pi * beta3 * (f1 + f2_array - 2 * f_ref_beta))
 
             integrand_f2 = ggg * self._generalized_rho_nli(delta_beta, rho_pump, z, alpha0)
             integrand_f1[f1_index] = np.trapz(integrand_f2, f2_array)
@@ -328,6 +329,7 @@ class NLI:
         alpha0 = self.alpha0(f_eval)
         beta2 = self.fiber_information.beta2
         beta3 = self.fiber_information.beta3
+        f_ref_beta = self.fiber_information.f_ref_beta
         gamma = self.fiber_information.gamma
 
         z = self.srs_profile.stimulated_raman_scattering.z
@@ -380,7 +382,7 @@ class NLI:
 
             if np.count_nonzero(ggg):
                 delta_beta = 4 * np.pi ** 2 * (f1 - f_eval) * (f2_array - f_eval) * \
-                             (beta2 + np.pi * beta3 * (f1 + f2_array))
+                             (beta2 + np.pi * beta3 * (f1 + f2_array - 2 * f_ref_beta))
                 
                 rho_2 = rho_function(f2_array)
                 rho_3 = rho_function(f3_array)
