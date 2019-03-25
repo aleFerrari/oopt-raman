@@ -76,8 +76,10 @@ if __name__ == '__main__':
     n_points_per_slot_max = 5000 
     delta_f = 50e9
     min_fwm_inv = 60
-    dense_regime = namedtuple('DenseRegimeParameters', 'n_points_per_slot_min n_points_per_slot_max delta_f min_fwm_inv')
-    dense_regime = dense_regime(n_points_per_slot_min=n_points_per_slot_min, n_points_per_slot_max=n_points_per_slot_max, delta_f=delta_f, min_fwm_inv=min_fwm_inv)
+    dense_regime = namedtuple('DenseRegimeParameters',
+                              'n_points_per_slot_min n_points_per_slot_max delta_f min_fwm_inv')
+    dense_regime = dense_regime(n_points_per_slot_min=n_points_per_slot_min,
+                                n_points_per_slot_max=n_points_per_slot_max, delta_f=delta_f, min_fwm_inv=min_fwm_inv)
 
     # FIBER
     fiber_info = namedtuple('FiberInformation', 'length attenuation_coefficient raman_coefficient beta2 beta3 gamma')
@@ -105,7 +107,8 @@ if __name__ == '__main__':
 
     # NLI PARAMETERS
     nli_parameters = namedtuple('NLIParameters', 'method frequency_resolution verbose dense_regime')
-    model_params = nli_parameters(method=method_nli, frequency_resolution=f_resolution_nli, verbose=verbose_nli, dense_regime=dense_regime)
+    model_params = nli_parameters(method=method_nli, frequency_resolution=f_resolution_nli,
+                                  verbose=verbose_nli, dense_regime=dense_regime)
 
     raman_solver = rm.RamanSolver(fiber)
     raman_solver.spectral_information = spectrum
@@ -119,7 +122,8 @@ if __name__ == '__main__':
     f_cut = [carrier.frequency for carrier in sorted(spectrum.carriers, key=attrgetter('frequency'))
              if carrier.channel_number in cut_list]
 
-    rho_end = interp1d(raman_solver.stimulated_raman_scattering.frequency, raman_solver.stimulated_raman_scattering.rho[:,-1])
+    rho_end = interp1d(raman_solver.stimulated_raman_scattering.frequency,
+                       raman_solver.stimulated_raman_scattering.rho[:,-1])
     p_cut = np.array(p_cut) * (rho_end(f_cut))**2
 
     snr_nl = p_cut / carriers_nli
