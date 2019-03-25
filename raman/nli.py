@@ -165,7 +165,7 @@ class NLI:
 
         if 'ggn_integral' == self.model_parameters.method.lower():
             carrier_nli = self._compute_ggn_integral(carrier, *carriers)
-        elif 'gn_analytic' == self.model_parameters.method.lower()
+        elif 'gn_analytic' == self.model_parameters.method.lower():
             carrier_nli = self._gn_analytic(carrier, *carriers)
         elif 'spectrally_separated' in self.model_parameters.method.lower():
             eta_matrix = self._compute_eta_matrix(carrier, *carriers)
