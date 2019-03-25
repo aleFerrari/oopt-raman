@@ -264,9 +264,11 @@ class NLI:
             delta_beta = 4 * np.pi**2 * (f1 - f_eval) * (f2_array - f_eval) * \
                          (beta2 + np.pi * beta3 * (f1 + f2_array - 2 * f_ref_beta))
 
-            delta_rho = rho_function(f1) * rho_function(f2_array) * rho_function(f3_array) / rho_function(f_eval)
+            # IMPLEMENTATION OF GGN USING delta_rho INSTEAD OF rho_pump
+            # delta_rho = rho_function(f1) * rho_function(f2_array) * rho_function(f3_array) / rho_function(f_eval)
+            # integrand_f2 = ggg * self._fwm_efficiency(delta_beta, delta_rho, z, alpha0)
 
-            integrand_f2 = ggg * self._fwm_efficiency(delta_beta, delta_rho, z, alpha0)
+            integrand_f2 = ggg * self._fwm_efficiency(delta_beta, rho_pump, z, alpha0)
             integrand_f1[f1_index] = np.trapz(integrand_f2, f2_array)
         generalized_psi = np.trapz(integrand_f1, f1_array)
 
@@ -294,6 +296,7 @@ class NLI:
         :param carriers: the full WDM comb
         :return: carrier_nli: the amount of nonlinear interference in W on the under analysis
         """
+
         alpha = self.alpha0() / 2
         print(f'{alpha}')
         length = self.fiber_information.length
