@@ -1,6 +1,7 @@
 import os
 import datetime
 import csv
+import time
 import numpy as np
 from collections import namedtuple
 from raman import nli
@@ -31,9 +32,13 @@ def main(fiber_information, spectral_information, raman_solver, model_params, cu
     nlint.srs_profile = raman_solver
     nlint.model_parameters = model_params
 
+    start_time = time.time()
     carriers_nli = [nlint.compute_nli(carrier, *spectral_information.carriers)
                     for carrier in spectral_information.carriers
                     if carrier.channel_number in cut_list]
+    stop_time = time.time()
+    comp_time = stop_time - start_time
+    print(f'NLI computed in {comp_time} seconds')
 
     return carriers_nli
 
