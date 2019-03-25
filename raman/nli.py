@@ -195,21 +195,28 @@ class NLI:
         if 'spm' in self.model_parameters.method.lower():
             if self.model_parameters.verbose:
                 print(f'Start computing SPM on channel #{carrier_cut.channel_number}')
-            # spectrally separated GGN
+            # SPM GGN
             if 'ggn' in self.model_parameters.method.lower():
                 eta_matrix[cut_index, cut_index] = self._generalized_spectrally_separated_spm(carrier_cut)
+            # SPM GN
+            elif 'gn' in self.model_parameters.method.lower():
+                eta_matrix[cut_index, cut_index] = self._gn_analytic(carrier_cut, *[carrier_cut]) /\
+                                                   carrier_cut.power.signal**3
 
         # XPM
         if 'xpm' in self.model_parameters.method.lower():
-            # spectrally separated GGN
-            if 'ggn' in self.model_parameters.method.lower():
-                for pump_index, pump_carrier in enumerate(carriers):
-                    if self.model_parameters.verbose:
-                        if not (cut_index == pump_index):
-                            print(f'Start computing XPM on channel #{carrier_cut.channel_number} '
-                                  f'from channel #{pump_carrier.channel_number}')
-                        eta_matrix[pump_index, pump_index] = self._generalized_spectrally_separated_xpm(carrier_cut,
-                                                                                                        pump_carrier)
+            for pump_index, pump_carrier in enumerate(carriers):
+                if self.model_parameters.verbose:
+                    if not (cut_index == pump_index):
+                        print(f'Start computing XPM on channel #{carrier_cut.channel_number} '
+                              f'from channel #{pump_carrier.channel_number}')
+                # spectrally separated GGN
+                if 'ggn' in self.model_parameters.method.lower():
+                    eta_matrix[pump_index, pump_index] = self._generalized_spectrally_separated_xpm(carrier_cut,
+                                                                                                    pump_carrier)
+                elif 'gn' in self.model_parameters.method.lower():
+                    eta_matrix[pump_index, pump_index] = self._gn_analytic(carrier_cut, *[pump_carrier]) /\
+                                                         (carrier_cut.power.signal * carrier_cut.power.signal**2)
         return eta_matrix
 
     # Methods for computing spectrally separated GGN
