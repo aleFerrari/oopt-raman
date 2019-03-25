@@ -53,7 +53,7 @@ class NLI:
         """
         self._model_parameters = model_params
 
-    def alpha0(self, f_eval):
+    def alpha0(self, f_eval=193.5e12):
         if len(self.fiber_information.attenuation_coefficient.alpha_power) == 1:
             alpha0 = self.fiber_information.attenuation_coefficient.alpha_power[0]
         else:
@@ -291,7 +291,7 @@ class NLI:
         :param carriers: the full WDM comb
         :return: carrier_nli: the amount of nonlinear interference in W on the under analysis
         """
-        alpha = self.alpha0(carrier.frequency) / 2
+        alpha = self.alpha0() / 2
         print(f'{alpha}')
         length = self.fiber_information.length
         effective_length = (1 - np.exp(-2 * alpha * length)) / (2 * alpha)
@@ -315,7 +315,7 @@ class NLI:
     def _psi(self, carrier, interfering_carrier):
         """ Calculates eq. 123 from arXiv:1209.0394.
         """
-        alpha = self.alpha0(carrier.frequency) / 2
+        alpha = self.alpha0() / 2
         beta2 = self.fiber_information.beta2
 
         asymptotic_length = 1 / (2 * alpha)
