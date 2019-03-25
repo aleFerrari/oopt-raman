@@ -76,7 +76,7 @@ if __name__ == '__main__':
     verbose_raman = 2
 
     # NLI PARAMETERS
-    f_resolution_nli = 0.1e9
+    f_resolution_nli = 0.2e9
     verbose_nli = 1
     method_nli = 'GGN_spectrally_separated_xpm_spm'
     n_points_per_slot_min = 10
