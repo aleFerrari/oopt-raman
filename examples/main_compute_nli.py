@@ -51,6 +51,7 @@ if __name__ == '__main__':
     gamma = 1.27e-3     # 1/W/m
     beta2 = 21.27e-27   # s^2/m
     beta3 = 0.0344e-39   # s^3/m
+    f_ref_beta = 193.5e12  # Hz
 
     # WDM COMB PARAMETERS
     num_channels = 91
@@ -76,18 +77,21 @@ if __name__ == '__main__':
     n_points_per_slot_max = 5000 
     delta_f = 50e9
     min_fwm_inv = 60
-    dense_regime = namedtuple('DenseRegimeParameters', 'n_points_per_slot_min n_points_per_slot_max delta_f min_fwm_inv')
-    dense_regime = dense_regime(n_points_per_slot_min=n_points_per_slot_min, n_points_per_slot_max=n_points_per_slot_max, delta_f=delta_f, min_fwm_inv=min_fwm_inv)
+    dense_regime = namedtuple('DenseRegimeParameters',
+                              'n_points_per_slot_min n_points_per_slot_max delta_f min_fwm_inv')
+    dense_regime = dense_regime(n_points_per_slot_min=n_points_per_slot_min,
+                                n_points_per_slot_max=n_points_per_slot_max, delta_f=delta_f, min_fwm_inv=min_fwm_inv)
 
     # FIBER
-    fiber_info = namedtuple('FiberInformation', 'length attenuation_coefficient raman_coefficient beta2 beta3 gamma')
+    fiber_info = namedtuple('FiberInformation', 'length attenuation_coefficient raman_coefficient beta2 beta3 '
+                                                'f_ref_beta gamma')
     attenuation_coefficient = namedtuple('AttenuationCoefficient', 'alpha_power frequency')
     raman_coefficient = namedtuple('RamanCoefficient', 'cr frequency')
 
     att_coeff = attenuation_coefficient(alpha_power=attenuation_coefficient_p, frequency=frequency_attenuation)
     raman_coeff = raman_coefficient(cr=cr, frequency=frequency_cr)
     fiber = fiber_info(length=fiber_length, attenuation_coefficient=att_coeff, raman_coefficient=raman_coeff,
-                                        gamma=gamma, beta2=beta2, beta3=beta3)
+                       gamma=gamma, beta2=beta2, beta3=beta3, f_ref_beta=f_ref_beta)
 
     # SPECTRUM
     spectral_information = namedtuple('SpectralInformation', 'carriers')
@@ -119,14 +123,15 @@ if __name__ == '__main__':
     f_cut = [carrier.frequency for carrier in sorted(spectrum.carriers, key=attrgetter('frequency'))
              if carrier.channel_number in cut_list]
 
-    rho_end = interp1d(raman_solver.stimulated_raman_scattering.frequency, raman_solver.stimulated_raman_scattering.rho[:,-1])
+    rho_end = interp1d(raman_solver.stimulated_raman_scattering.frequency,
+                       raman_solver.stimulated_raman_scattering.rho[:, -1])
     p_cut = np.array(p_cut) * (rho_end(f_cut))**2
 
     snr_nl = p_cut / carriers_nli
 
     fig1 = plt.figure()
-    plt.plot(f_cut, 10*np.log10(p_cut)+30, '*')
-    plt.plot(f_cut, 10*np.log10(carriers_nli)+30, '*')
+    plt.plot(f_cut, 10*np.log10(p_cut) + 30, '*')
+    plt.plot(f_cut, 10*np.log10(carriers_nli) + 30, '*')
     plt.xlabel('Frequency [Hz]')
     plt.ylabel('Power [dBm]')
     plt.grid()
