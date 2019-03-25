@@ -25,13 +25,12 @@ def raman_gain_efficiency_from_csv(csv_file_name):
 
 
 def main(fiber_information, spectral_information, raman_solver, model_params, cut_list):
-    raman_solver.stimulated_raman_scattering  # Compute SRS profile
     
     nlint = nli.NLI(fiber_information=fiber_information)
     nlint.srs_profile = raman_solver
     nlint.model_parameters = model_params
 
-    carriers_nli = [nlint._gn_analytic(carrier, *spectral_information.carriers)
+    carriers_nli = [nlint.compute_nli(carrier, *spectral_information.carriers)
                     for carrier in spectral_information.carriers
                     if carrier.channel_number in cut_list]
 
@@ -73,7 +72,7 @@ if __name__ == '__main__':
     # NLI PARAMETERS
     f_resolution_nli = 2e9
     verbose_nli = 1
-    method_nli = 'GGN_integral'
+    method_nli = 'GN_analytic'
     n_points_per_slot_min = 4
     n_points_per_slot_max = 5000 
     delta_f = 50e9
