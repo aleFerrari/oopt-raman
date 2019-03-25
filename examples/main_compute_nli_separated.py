@@ -55,7 +55,7 @@ if __name__ == '__main__':
 
     gamma = 1.27e-3     # 1/W/m
     beta2 = 21.27e-27   # s^2/m
-    beta3 = 0.0344e-39   # s^3/m
+    beta3 = 0.0344e-39  # s^3/m
 
     # WDM COMB PARAMETERS
     num_channels = 91
@@ -128,8 +128,8 @@ if __name__ == '__main__':
              if carrier.channel_number in cut_list]
 
     rho_end = interp1d(raman_solver.stimulated_raman_scattering.frequency,
-                       raman_solver.stimulated_raman_scattering.rho[:,-1])
-    p_cut = np.array(p_cut) #* (rho_end(f_cut))**2
+                       raman_solver.stimulated_raman_scattering.rho[:, -1])
+    p_cut = np.array(p_cut)
 
     snr_nl = p_cut / carriers_nli
 

@@ -404,11 +404,11 @@ class NLI:
         """ Computes the four-wave mixing efficiency
         """
         w = 1j*delta_beta - alpha0
-        fwm_eff = (delta_rho[:,-1]*np.exp(w*z[-1])-delta_rho[:,0]*np.exp(w*z[0]))/w
+        fwm_eff = (delta_rho[:, -1] * np.exp(w * z[-1]) - delta_rho[:, 0] * np.exp(w*z[0])) / w
         for z_ind in range(0, len(z) - 1):
             derivative_rho = (delta_rho[:, z_ind + 1] - delta_rho[:, z_ind]) / (z[z_ind + 1] - z[z_ind])
 
-            fwm_eff -= derivative_rho * (np.exp(w*z[z_ind + 1])-np.exp(w*z[z_ind]))/(w**2)
+            fwm_eff -= derivative_rho * (np.exp(w * z[z_ind + 1]) - np.exp(w * z[z_ind])) / (w**2)
 
         fwm_eff = np.abs(fwm_eff) ** 2
 
