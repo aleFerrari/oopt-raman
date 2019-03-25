@@ -129,8 +129,8 @@ if __name__ == '__main__':
     snr_nl = p_cut / carriers_nli
 
     fig1 = plt.figure()
-    plt.plot(f_cut, 10*np.log10(p_cut)+30, '*')
-    plt.plot(f_cut, 10*np.log10(carriers_nli)+30, '*')
+    plt.plot(f_cut, 10*np.log10(p_cut) + 30, '*')
+    plt.plot(f_cut, 10*np.log10(carriers_nli) + 30, '*')
     plt.xlabel('Frequency [Hz]')
     plt.ylabel('Power [dBm]')
     plt.grid()
