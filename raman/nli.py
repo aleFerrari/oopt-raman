@@ -255,7 +255,7 @@ class NLI:
         integrand_f1 = np.zeros(len(f1_array))
         for f1_index, (f1, psd1_sample) in enumerate(zip(f1_array, psd1)):
             f2_array = self._compute_dense_regimes(f1, f_eval, f2_array_ref, 1)
-            f2_array = f2_array_ref
+            # f2_array = f2_array_ref
             f3_array = f1 + f2_array - f_eval
             psd2 = ut.raised_cosine_comb(f2_array, carrier_cut)
             psd3 = ut.raised_cosine_comb(f3_array, pump_carrier)
