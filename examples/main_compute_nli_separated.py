@@ -78,7 +78,7 @@ if __name__ == '__main__':
     # NLI PARAMETERS
     f_resolution_nli = 0.2e9
     verbose_nli = 1
-    method_nli = 'GGN_spectrally_separated_xpm'
+    method_nli = 'GGN_spectrally_separated_xpm_spm'
     n_points_per_slot_min = 10
     n_points_per_slot_max = 5000 
     delta_f = 50e9
