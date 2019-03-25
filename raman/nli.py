@@ -165,7 +165,9 @@ class NLI:
 
         if 'ggn_integral' == self.model_parameters.method.lower():
             carrier_nli = self._compute_ggn_integral(carrier, *carriers)
-        elif 'ggn_spectrally_separated' in self.model_parameters.method.lower():
+        elif 'gn_analytic' == self.model_parameters.method.lower()
+            carrier_nli = self._gn_analytic(carrier, *carriers)
+        elif 'spectrally_separated' in self.model_parameters.method.lower():
             eta_matrix = self._compute_eta_matrix(carrier, *carriers)
             carrier_nli = self._carrier_nli_from_eta_matrix(eta_matrix, carrier, *carriers)
         else:
@@ -298,7 +300,6 @@ class NLI:
         """
 
         alpha = self.alpha0() / 2
-        print(f'{alpha}')
         length = self.fiber_information.length
         effective_length = (1 - np.exp(-2 * alpha * length)) / (2 * alpha)
         asymptotic_length = 1 / (2 * alpha)
@@ -309,11 +310,11 @@ class NLI:
         g_nli = 0
         for interfering_carrier in carriers:
             psi = self._psi(carrier, interfering_carrier)
-            g_nli += (interfering_carrier.power.signal / interfering_carrier.baud_rate) ** 2 \
-                     * (carrier.power.signal / carrier.baud_rate) * psi
+            g_nli += (interfering_carrier.power.signal / interfering_carrier.baud_rate) ** 2 * \
+                     (carrier.power.signal / carrier.baud_rate) * psi
 
-        g_nli *= (16 / 27) * (gamma * effective_length) ** 2 \
-                 / (2 * np.pi * abs(beta2) * asymptotic_length)
+        g_nli *= (16 / 27) * (gamma * effective_length) ** 2 /\
+                 (2 * np.pi * abs(beta2) * asymptotic_length)
 
         carrier_nli = carrier.baud_rate * g_nli
         return carrier_nli
