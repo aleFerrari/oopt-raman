@@ -246,15 +246,16 @@ class NLI:
         f1_array = np.arange(pump_carrier.frequency - pump_carrier.baud_rate,
                              pump_carrier.frequency + pump_carrier.baud_rate,
                              f_resolution)
-        f2_array = np.arange(carrier_cut.frequency - carrier_cut.baud_rate,
-                             carrier_cut.frequency + carrier_cut.baud_rate,
-                             f_resolution)
+        f2_array_ref = np.arange(carrier_cut.frequency - carrier_cut.baud_rate,
+                                 carrier_cut.frequency + carrier_cut.baud_rate,
+                                 f_resolution)
         psd1 = ut.raised_cosine_comb(f1_array, pump_carrier)
-        psd2 = ut.raised_cosine_comb(f2_array, carrier_cut)
 
         integrand_f1 = np.zeros(len(f1_array))
         for f1_index, (f1, psd1_sample) in enumerate(zip(f1_array, psd1)):
+            f2_array = self._compute_dense_regimes(f1, f_eval, f2_array_ref, 1)
             f3_array = f1 + f2_array - f_eval
+            psd2 = ut.raised_cosine_comb(f2_array, carrier_cut)
             psd3 = ut.raised_cosine_comb(f3_array, pump_carrier)
             ggg = psd1_sample * psd2 * psd3
 
