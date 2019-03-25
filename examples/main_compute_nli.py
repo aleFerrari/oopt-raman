@@ -71,7 +71,7 @@ if __name__ == '__main__':
     # NLI PARAMETERS
     f_resolution_nli = 2e9
     verbose_nli = 1
-    method_nli = 'ggn_integral'
+    method_nli = 'GGN_integral'
     n_points_per_slot_min = 4
     n_points_per_slot_max = 5000 
     delta_f = 50e9
