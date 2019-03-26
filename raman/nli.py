@@ -214,8 +214,7 @@ class NLI:
                     if 'ggn' in self.model_parameters.method.lower():
                         partial_nli = self._generalized_spectrally_separated_xpm(carrier_cut, pump_carrier)
                     elif 'gn' in self.model_parameters.method.lower():
-                        partial_nli = self._gn_analytic(carrier_cut, *[pump_carrier]) /\
-                                                             (carrier_cut.power.signal * carrier_cut.power.signal**2)
+                        partial_nli = self._gn_analytic(carrier_cut, *[pump_carrier])
                     eta_matrix[pump_index, pump_index] = partial_nli
         return eta_matrix
 
