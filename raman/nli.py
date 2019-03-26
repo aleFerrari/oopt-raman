@@ -221,13 +221,13 @@ class NLI:
 
     # Methods for computing spectrally separated GGN
     def _generalized_spectrally_separated_spm(self, carrier):
-        eta = (16 / 27) * self.fiber_information.gamma**2 * carrier.baud_rate**2 *\
+        eta = (16.0 / 27.0) * self.fiber_information.gamma**2 * carrier.baud_rate**2 *\
               2 * self._generalized_psi(carrier, carrier)
 
         return eta
 
     def _generalized_spectrally_separated_xpm(self, carrier_cut, pump_carrier):
-        eta = (16 / 27) * self.fiber_information.gamma**2 * pump_carrier.baud_rate**2 *\
+        eta = (16.0 / 27.0) * self.fiber_information.gamma**2 * pump_carrier.baud_rate**2 *\
               self._generalized_psi(carrier_cut, pump_carrier)
 
         return eta
@@ -419,7 +419,7 @@ class NLI:
             if self.model_parameters.verbose:
                 bar.update(f_ind)
 
-        gnli = 16.0 / 27.0 * gamma ** 2 * np.trapz(integrand_f1, f1_array)  # compute outer integral
+        gnli = 16.0 / 27.0 * gamma**2 * np.trapz(integrand_f1, f1_array)  # compute outer integral
 
         carrier_nli = carrier.baud_rate * gnli
 
