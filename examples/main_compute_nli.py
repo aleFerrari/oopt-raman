@@ -43,7 +43,7 @@ if __name__ == '__main__':
     # FIBER PARAMETERS
     cr_file_name = './raman_gain_efficiency/SSMF.csv'
     cr, frequency_cr = raman_gain_efficiency_from_csv(cr_file_name)
-    cr = cr *0
+    cr = cr
 
     fiber_length = np.array([75e3])
     attenuation_coefficient_p = np.array([0.046e-3])
@@ -51,7 +51,7 @@ if __name__ == '__main__':
 
     gamma = 1.27e-3     # 1/W/m
     beta2 = 21.27e-27   # s^2/m
-    beta3 = 0.0344e-39 *0   # s^3/m
+    beta3 = 0.0344e-39   # s^3/m
     f_ref_beta = 193.5e12  # Hz
 
     # WDM COMB PARAMETERS
