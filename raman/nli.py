@@ -222,13 +222,16 @@ class NLI:
     # Methods for computing spectrally separated GGN
     def _generalized_spectrally_separated_spm(self, carrier):
         eta = (16.0 / 27.0) * self.fiber_information.gamma**2 * carrier.baud_rate**2 *\
-              2 * self._generalized_psi(carrier, carrier)
+              2 * self._generalized_psi(carrier, carrier) * \
+              (carrier.baud_rate / carrier.power.signal)**3  # Normalization factor of g_ch,n
 
         return eta
 
     def _generalized_spectrally_separated_xpm(self, carrier_cut, pump_carrier):
         eta = (16.0 / 27.0) * self.fiber_information.gamma**2 * pump_carrier.baud_rate**2 *\
-              self._generalized_psi(carrier_cut, pump_carrier)
+              self._generalized_psi(carrier_cut, pump_carrier) * \
+              (carrier_cut.baud_rate / carrier_cut.power.signal) * \ 
+              (pump_carrier.baud_rate / pump_carrier.power.signal)**2  # Normalization factor of g_ch,n and g_ch,i
 
         return eta
 
@@ -280,6 +283,8 @@ class NLI:
             integrand_f2 = ggg * self._generalized_rho_nli(delta_beta, rho_pump, z, alpha0)
             integrand_f1[f1_index] = np.trapz(integrand_f2, f2_array)
         generalized_psi = np.trapz(integrand_f1, f1_array)
+        generalized_psi *= carrier_cut.baud_rate / carrier_cut.power.signal * \
+                           pump_carrier.baud_rate**2 / pump_carrier.power.signal**2
 
         return generalized_psi
 
