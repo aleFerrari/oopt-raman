@@ -197,40 +197,40 @@ class NLI:
                 print(f'Start computing SPM on channel #{carrier_cut.channel_number}')
             # SPM GGN
             if 'ggn' in self.model_parameters.method.lower():
-                eta_matrix[cut_index, cut_index] = self._generalized_spectrally_separated_spm(carrier_cut)
+                partial_nli = self._generalized_spectrally_separated_spm(carrier_cut)
             # SPM GN
             elif 'gn' in self.model_parameters.method.lower():
-                eta_matrix[cut_index, cut_index] = self._gn_analytic(carrier_cut, *[carrier_cut]) /\
-                                                   carrier_cut.power.signal**3
+                partial_nli = self._gn_analytic(carrier_cut, *[carrier_cut])
+            eta_matrix[cut_index, cut_index] = partial_nli / carrier_cut.power.signal**3
 
         # XPM
         if 'xpm' in self.model_parameters.method.lower():
             for pump_index, pump_carrier in enumerate(carriers):
-                if self.model_parameters.verbose:
-                    if not (cut_index == pump_index):
+                if not (cut_index == pump_index):
+                    if self.model_parameters.verbose:
                         print(f'Start computing XPM on channel #{carrier_cut.channel_number} '
                               f'from channel #{pump_carrier.channel_number}')
-                # spectrally separated GGN
-                if 'ggn' in self.model_parameters.method.lower():
-                    eta_matrix[pump_index, pump_index] = self._generalized_spectrally_separated_xpm(carrier_cut,
-                                                                                                    pump_carrier)
-                elif 'gn' in self.model_parameters.method.lower():
-                    eta_matrix[pump_index, pump_index] = self._gn_analytic(carrier_cut, *[pump_carrier]) /\
-                                                         (carrier_cut.power.signal * carrier_cut.power.signal**2)
+                    # spectrally separated GGN
+                    if 'ggn' in self.model_parameters.method.lower():
+                        partial_nli = self._generalized_spectrally_separated_xpm(carrier_cut, pump_carrier)
+                    elif 'gn' in self.model_parameters.method.lower():
+                        partial_nli = self._gn_analytic(carrier_cut, *[pump_carrier]) /\
+                                                             (carrier_cut.power.signal * carrier_cut.power.signal**2)
+
+                    eta_matrix[pump_index, pump_index] = partial_nli /\
+                                                         carrier_cut.power.signal / pump_carrier.power.signal**2
         return eta_matrix
 
     # Methods for computing spectrally separated GGN
     def _generalized_spectrally_separated_spm(self, carrier):
         eta = (16.0 / 27.0) * self.fiber_information.gamma**2 * carrier.baud_rate *\
-              2 * self._generalized_psi(carrier, carrier) /\
-              carrier.power.signal**3
+              2 * self._generalized_psi(carrier, carrier)
 
         return eta
 
     def _generalized_spectrally_separated_xpm(self, carrier_cut, pump_carrier):
         eta = (16.0 / 27.0) * self.fiber_information.gamma**2 * carrier_cut.baud_rate *\
-              self._generalized_psi(carrier_cut, pump_carrier) /\
-              carrier_cut.power.signal / pump_carrier.power.signal**2
+              self._generalized_psi(carrier_cut, pump_carrier)
 
         return eta
 
@@ -258,15 +258,13 @@ class NLI:
         f1_array = np.arange(pump_carrier.frequency - pump_carrier.baud_rate,
                              pump_carrier.frequency + pump_carrier.baud_rate,
                              f_resolution)
-        f2_array_ref = np.arange(carrier_cut.frequency - carrier_cut.baud_rate,
+        f2_array = np.arange(carrier_cut.frequency - carrier_cut.baud_rate,
                                  carrier_cut.frequency + carrier_cut.baud_rate,
                                  f_resolution)
         psd1 = ut.raised_cosine_comb(f1_array, pump_carrier)
 
         integrand_f1 = np.zeros(len(f1_array))
         for f1_index, (f1, psd1_sample) in enumerate(zip(f1_array, psd1)):
-            f2_array = self._compute_dense_regimes(f1, f_eval, f2_array_ref, 1)
-            # f2_array = f2_array_ref
             f3_array = f1 + f2_array - f_eval
             psd2 = ut.raised_cosine_comb(f2_array, carrier_cut)
             psd3 = ut.raised_cosine_comb(f3_array, pump_carrier)
