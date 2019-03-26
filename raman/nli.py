@@ -276,10 +276,10 @@ class NLI:
                          (beta2 + np.pi * beta3 * (f1 + f2_array - 2 * f_ref_beta))
 
             # IMPLEMENTATION OF GGN USING delta_rho INSTEAD OF rho_pump
-            delta_rho = rho_function(f1) * rho_function(f2_array) * rho_function(f3_array) / rho_function(f_eval)
-            integrand_f2 = ggg * self._fwm_efficiency(delta_beta, delta_rho, z, alpha0)
+            # delta_rho = rho_function(f1) * rho_function(f2_array) * rho_function(f3_array) / rho_function(f_eval)
+            # integrand_f2 = ggg * self._fwm_efficiency(delta_beta, delta_rho, z, alpha0)
 
-            # integrand_f2 = ggg * self._generalized_rho_nli(delta_beta, rho_pump, z, alpha0)
+            integrand_f2 = ggg * self._generalized_rho_nli(delta_beta, rho_pump, z, alpha0)
             integrand_f1[f1_index] = np.trapz(integrand_f2, f2_array)
         generalized_psi = np.trapz(integrand_f1, f1_array)
 
