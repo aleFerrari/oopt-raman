@@ -201,7 +201,7 @@ class NLI:
             # SPM GN
             elif 'gn' in self.model_parameters.method.lower():
                 partial_nli = self._gn_analytic(carrier_cut, *[carrier_cut])
-            eta_matrix[cut_index, cut_index] = partial_nli / carrier_cut.power.signal**3
+            eta_matrix[cut_index, cut_index] = partial_nli / (carrier_cut.power.signal**3)
 
         # XPM
         if 'xpm' in self.model_parameters.method.lower():
@@ -215,22 +215,22 @@ class NLI:
                         partial_nli = self._generalized_spectrally_separated_xpm(carrier_cut, pump_carrier)
                     elif 'gn' in self.model_parameters.method.lower():
                         partial_nli = self._gn_analytic(carrier_cut, *[pump_carrier])
-                    eta_matrix[pump_index, pump_index] = partial_nli / \
-                                                         (carrier_cut.power.signal * carrier_cut.power.signal**2)
+                    eta_matrix[pump_index, pump_index] = partial_nli /\
+                                                         (carrier_cut.power.signal * pump_carrier.power.signal**2)
         return eta_matrix
 
     # Methods for computing spectrally separated GGN
     def _generalized_spectrally_separated_spm(self, carrier):
-        eta = (16.0 / 27.0) * self.fiber_information.gamma**2 * carrier.baud_rate *\
-              2 * self._generalized_psi(carrier, carrier)
+        partial_nli = carrier.baud_rate * (16.0 / 27.0) * self.fiber_information.gamma**2 *\
+                      self._generalized_psi(carrier, carrier)
 
-        return eta
+        return partial_nli
 
     def _generalized_spectrally_separated_xpm(self, carrier_cut, pump_carrier):
-        eta = (16.0 / 27.0) * self.fiber_information.gamma**2 * carrier_cut.baud_rate *\
-              self._generalized_psi(carrier_cut, pump_carrier)
+        partial_nli = carrier_cut.baud_rate * (16.0 / 27.0) * self.fiber_information.gamma**2 *\
+                      2 * self._generalized_psi(carrier_cut, pump_carrier)
 
-        return eta
+        return partial_nli
 
     def _generalized_psi(self, carrier_cut, pump_carrier):
         """ It computes the generalized psi function similarly to the one used in the GN model
@@ -257,8 +257,8 @@ class NLI:
                              pump_carrier.frequency + pump_carrier.baud_rate,
                              f_resolution)
         f2_array = np.arange(carrier_cut.frequency - carrier_cut.baud_rate,
-                                 carrier_cut.frequency + carrier_cut.baud_rate,
-                                 f_resolution)
+                             carrier_cut.frequency + carrier_cut.baud_rate,
+                             f_resolution)
         psd1 = ut.raised_cosine_comb(f1_array, pump_carrier)
 
         integrand_f1 = np.zeros(len(f1_array))
@@ -318,7 +318,7 @@ class NLI:
             g_nli += (interfering_carrier.power.signal / interfering_carrier.baud_rate) ** 2 * \
                      (carrier.power.signal / carrier.baud_rate) * psi
 
-        g_nli *= (16 / 27) * (gamma * effective_length) ** 2 /\
+        g_nli *= (16.0 / 27.0) * (gamma * effective_length) ** 2 /\
                  (2 * np.pi * abs(beta2) * asymptotic_length)
 
         carrier_nli = carrier.baud_rate * g_nli
@@ -331,10 +331,10 @@ class NLI:
         beta2 = self.fiber_information.beta2
 
         asymptotic_length = 1 / (2 * alpha)
-        if carrier.channel_number == interfering_carrier.channel_number:  # SCI
+        if carrier.channel_number == interfering_carrier.channel_number:  # SPM
             psi = np.arcsinh(0.5 * np.pi**2 * asymptotic_length
                               * abs(beta2) * carrier.baud_rate**2)
-        else:  # XCI
+        else:  # XPM
             delta_f = carrier.frequency - interfering_carrier.frequency
             psi = np.arcsinh(np.pi**2 * asymptotic_length * abs(beta2) *
                              carrier.baud_rate * (delta_f + 0.5 * interfering_carrier.baud_rate))
