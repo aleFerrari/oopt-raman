@@ -55,7 +55,7 @@ if __name__ == '__main__':
     f_ref_beta = 193.5e12  # Hz
 
     # WDM COMB PARAMETERS
-    num_channels = 11
+    num_channels = 91
     delta_f = 50e9
     pch = 0.5e-3
 

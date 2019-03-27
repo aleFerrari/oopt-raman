@@ -48,7 +48,7 @@ if __name__ == '__main__':
     # FIBER PARAMETERS
     cr_file_name = './raman_gain_efficiency/SSMF.csv'
     cr, frequency_cr = raman_gain_efficiency_from_csv(cr_file_name)
-    cr = cr *0
+    cr = cr
 
     fiber_length = np.array([75e3])
     attenuation_coefficient_p = np.array([0.046e-3])
