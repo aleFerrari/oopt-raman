@@ -12,11 +12,6 @@ import time
 folder_results = './results/pump_and_probe_jocn/'
 
 # FIBER PARAMETERS
-
-frequency_offset = 0
-probe_power = 0
-pump_power = 0
-
 fiber_information = namedtuple('FiberInformation',
                                'length attenuation_coefficient raman_coefficient beta2 beta3 gamma')
 attenuation_coefficient_p = namedtuple('Attenuation_coeff', 'alpha_power')
@@ -108,6 +103,9 @@ print(snr_nl)
 # SAVE DATA
 if not os.path.exists(folder_results):
     os.makedirs(folder_results)
+
+# SNR from np.array to list
+snr_nl = [elem for elem in snr_nl]
 
 with open(folder_results + 'snr_nl.csv', 'a') as fd:
     writer = csv.writer(fd)
