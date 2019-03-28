@@ -249,7 +249,10 @@ class NLI:
         frequency_rho = self.srs_profile.stimulated_raman_scattering.frequency
         rho = self.srs_profile.stimulated_raman_scattering.rho
         rho = rho * np.exp(np.abs(alpha0) * z / 2)
-        rho_function = interp1d(frequency_rho, rho, axis=0, fill_value='extrapolate')
+        if len(frequency_rho) == 1:
+            rho_function = lambda f: rho[0, :]
+        else:
+            rho_function = interp1d(frequency_rho, rho, axis=0, fill_value='extrapolate')
         rho_pump = rho_function(pump_carrier.frequency)
 
         f_resolution = self.model_parameters.frequency_resolution
@@ -379,7 +382,10 @@ class NLI:
         g2 = psd
 
         # Interpolation of SRS gain/loss profile
-        rho_function = interp1d(frequency_rho, rho, axis=0, fill_value='extrapolate')
+        if len(frequency_rho) == 1:
+            rho_function = lambda f: np.array([rho[0, :] for _ in f]) if hasattr(f, '__iter__') else np.array(rho)
+        else:
+            rho_function = interp1d(frequency_rho, rho, axis=0, fill_value='extrapolate')
         rho_1 = rho_function(f1_array)
         rho_f = rho_function(f_eval)
 
@@ -396,8 +402,8 @@ class NLI:
             if g1[f_ind] == 0:
                 continue
             f2_array = self._compute_dense_regimes(f1, f_eval, frequency_psd, len_carriers)
-            f3_array = f1 + f2_array - f_eval
             g2 = ut.raised_cosine_comb(f2_array, *carriers)
+            f3_array = f1 + f2_array - f_eval
 
             g3 = ut.raised_cosine_comb(f3_array, *carriers)
             ggg = g2 * g3 * g1[f_ind]
