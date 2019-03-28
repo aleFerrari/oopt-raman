@@ -178,9 +178,10 @@ class NLI:
     @staticmethod
     def _carrier_nli_from_eta_matrix(eta_matrix, carrier, *carriers):
         carrier_nli = 0
-        for pump_carrier_1, eta_row in zip(carriers, eta_matrix):
-            for pump_carrier_2, eta in zip(carriers, eta_row):
-                carrier_nli += eta * pump_carrier_1.power.signal * pump_carrier_2.power.signal
+        for pump_carrier_1 in carriers:
+            for pump_carrier_2 in carriers:
+                carrier_nli += eta_matrix[pump_carrier_1.channel_number-1, pump_carrier_2.channel_number-1] * \
+                               pump_carrier_1.power.signal * pump_carrier_2.power.signal
         carrier_nli *= carrier.power.signal
 
         return carrier_nli
@@ -206,7 +207,8 @@ class NLI:
 
         # XPM
         if 'xpm' in self.model_parameters.method.lower():
-            for pump_index, pump_carrier in enumerate(carriers):
+            for pump_carrier in carriers:
+                pump_index = pump_carrier.channel_number - 1
                 if not (cut_index == pump_index):
                     if self.model_parameters.verbose:
                         print(f'Start computing XPM on channel #{carrier_cut.channel_number} '
