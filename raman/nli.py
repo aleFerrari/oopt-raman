@@ -189,7 +189,8 @@ class NLI:
 
         cut_index = carrier_cut.channel_number - 1
         # Matrix initialization
-        eta_matrix = np.zeros(shape=(len(carriers), len(carriers)))
+        matrix_size = max(carriers, key=lambda x: getattr(x, 'channel_number')).channel_number
+        eta_matrix = np.zeros(shape=(matrix_size, matrix_size))
 
         # SPM
         if 'spm' in self.model_parameters.method.lower():
