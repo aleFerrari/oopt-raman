@@ -224,18 +224,33 @@ class NLI:
 
     # Methods for computing spectrally separated GGN
     def _generalized_spectrally_separated_spm(self, carrier):
-        partial_nli = carrier.baud_rate * (16.0 / 27.0) * self.fiber_information.gamma**2 *\
-                      self._generalized_psi(carrier, carrier)
+
+        f_cut_resolution = self.model_parameters.spectral_sep.f_cut_resolution['delta_0']
+
+        g_cut = (carrier.power.signal / carrier.baud_rate)
+
+        partial_nli = carrier.baud_rate * (16.0 / 27.0) * self.fiber_information.gamma**2 * \
+                      g_cut**3 * \
+                      self._generalized_psi(carrier, carrier, f_cut_resolution, f_cut_resolution)
 
         return partial_nli
 
     def _generalized_spectrally_separated_xpm(self, carrier_cut, pump_carrier):
-        partial_nli = carrier_cut.baud_rate * (16.0 / 27.0) * self.fiber_information.gamma**2 *\
-                      2 * self._generalized_psi(carrier_cut, pump_carrier)
+
+        delta_index = pump_carrier.channel_number - carrier_cut.channel_number
+        f_cut_resolution = self.model_parameters.spectral_sep.f_cut_resolution[f'delta_{delta_index}']
+        f_pump_resolution = self.model_parameters.spectral_sep.f_pump_resolution
+
+        g_pump = (pump_carrier.power.signal / pump_carrier.baud_rate)
+        g_cut = (carrier_cut.power.signal / carrier_cut.baud_rate)
+
+        partial_nli = carrier_cut.baud_rate * (16.0 / 27.0) * self.fiber_information.gamma**2 * \
+                      g_pump**2 * g_cut * \
+                      2 * self._generalized_psi(carrier_cut, pump_carrier, f_cut_resolution, f_pump_resolution)
 
         return partial_nli
 
-    def _generalized_psi(self, carrier_cut, pump_carrier):
+    def _generalized_psi(self, carrier_cut, pump_carrier, f_cut_resolution, f_pump_resolution):
         """ It computes the generalized psi function similarly to the one used in the GN model
 
         :return: generalized_psi
@@ -258,20 +273,19 @@ class NLI:
             rho_function = interp1d(frequency_rho, rho, axis=0, fill_value='extrapolate')
         rho_pump = rho_function(pump_carrier.frequency)
 
-        f_resolution = self.model_parameters.frequency_resolution
         f1_array = np.arange(pump_carrier.frequency - pump_carrier.baud_rate,
                              pump_carrier.frequency + pump_carrier.baud_rate,
-                             f_resolution)
+                             f_pump_resolution)
         f2_array = np.arange(carrier_cut.frequency - carrier_cut.baud_rate,
                              carrier_cut.frequency + carrier_cut.baud_rate,
-                             f_resolution)
-        psd1 = ut.raised_cosine_comb(f1_array, pump_carrier)
+                             f_cut_resolution)
+        psd1 = ut.raised_cosine_comb(f1_array, pump_carrier) * (pump_carrier.baud_rate / pump_carrier.power.signal)
 
         integrand_f1 = np.zeros(len(f1_array))
         for f1_index, (f1, psd1_sample) in enumerate(zip(f1_array, psd1)):
             f3_array = f1 + f2_array - f_eval
-            psd2 = ut.raised_cosine_comb(f2_array, carrier_cut)
-            psd3 = ut.raised_cosine_comb(f3_array, pump_carrier)
+            psd2 = ut.raised_cosine_comb(f2_array, carrier_cut) * (carrier_cut.baud_rate / carrier_cut.power.signal)
+            psd3 = ut.raised_cosine_comb(f3_array, pump_carrier) * (pump_carrier.baud_rate / pump_carrier.power.signal)
             ggg = psd1_sample * psd2 * psd3
 
             delta_beta = 4 * np.pi**2 * (f1 - f_eval) * (f2_array - f_eval) * \
