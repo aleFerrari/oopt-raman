@@ -1,5 +1,5 @@
 import os
-import time
+import datetime
 import csv
 import numpy as np
 from collections import namedtuple
@@ -25,19 +25,14 @@ def raman_gain_efficiency_from_csv(csv_file_name):
 
 
 def main(fiber_information, spectral_information, raman_solver, model_params, cut_list):
-    raman_solver.stimulated_raman_scattering  # Compute SRS profile
     
     nlint = nli.NLI(fiber_information=fiber_information)
     nlint.srs_profile = raman_solver
     nlint.model_parameters = model_params
 
-    start_time = time.time()
     carriers_nli = [nlint.compute_nli(carrier, *spectral_information.carriers)
                     for carrier in spectral_information.carriers
                     if carrier.channel_number in cut_list]
-    stop_time = time.time()
-    comp_time = stop_time - start_time
-    print(f'NLI computed in {comp_time} seconds')
 
     return carriers_nli
 
@@ -47,7 +42,7 @@ if __name__ == '__main__':
     # FIBER PARAMETERS
     cr_file_name = './raman_gain_efficiency/SSMF.csv'
     cr, frequency_cr = raman_gain_efficiency_from_csv(cr_file_name)
-    cr = cr
+    cr = cr *0
 
     fiber_length = np.array([75e3])
     attenuation_coefficient_p = np.array([0.046e-3])
@@ -55,7 +50,6 @@ if __name__ == '__main__':
 
     gamma = 1.27e-3     # 1/W/m
     beta2 = 21.27e-27   # s^2/m
-    beta3 = 0.0344e-39   # s^3/m
     f_ref_beta = 193.5e12  # Hz
 
     # WDM COMB PARAMETERS
@@ -77,9 +71,9 @@ if __name__ == '__main__':
     # NLI PARAMETERS
     f_resolution_nli = 2e9
     verbose_nli = 1
-    method_nli = 'GGN_integral'
+    method_nli = 'GN_analytic'
     n_points_per_slot_min = 4
-    n_points_per_slot_max = 1000
+    n_points_per_slot_max = 5000
     delta_f = 50e9
     min_fwm_inv = 60
     dense_regime = namedtuple('DenseRegimeParameters',
@@ -88,7 +82,7 @@ if __name__ == '__main__':
                                 n_points_per_slot_max=n_points_per_slot_max, delta_f=delta_f, min_fwm_inv=min_fwm_inv)
 
     # FIBER
-    fiber_info = namedtuple('FiberInformation', 'length attenuation_coefficient raman_coefficient beta2 beta3 '
+    fiber_info = namedtuple('FiberInformation', 'length attenuation_coefficient raman_coefficient beta2 '
                                                 'f_ref_beta gamma')
     attenuation_coefficient = namedtuple('AttenuationCoefficient', 'alpha_power frequency')
     raman_coefficient = namedtuple('RamanCoefficient', 'cr frequency')
@@ -96,7 +90,7 @@ if __name__ == '__main__':
     att_coeff = attenuation_coefficient(alpha_power=attenuation_coefficient_p, frequency=frequency_attenuation)
     raman_coeff = raman_coefficient(cr=cr, frequency=frequency_cr)
     fiber = fiber_info(length=fiber_length, attenuation_coefficient=att_coeff, raman_coefficient=raman_coeff,
-                       gamma=gamma, beta2=beta2, beta3=beta3, f_ref_beta=f_ref_beta)
+                       gamma=gamma, beta2=beta2, f_ref_beta=f_ref_beta)
 
     # SPECTRUM
     spectral_information = namedtuple('SpectralInformation', 'carriers')
@@ -128,8 +122,6 @@ if __name__ == '__main__':
     f_cut = [carrier.frequency for carrier in sorted(spectrum.carriers, key=attrgetter('frequency'))
              if carrier.channel_number in cut_list]
 
-    rho_end = interp1d(raman_solver.stimulated_raman_scattering.frequency,
-                       raman_solver.stimulated_raman_scattering.rho[:, -1])
     p_cut = np.array(p_cut)
 
     snr_nl = p_cut / carriers_nli

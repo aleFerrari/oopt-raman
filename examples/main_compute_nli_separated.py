@@ -1,6 +1,7 @@
 import os
-import time
+import datetime
 import csv
+import time
 import numpy as np
 from collections import namedtuple
 from raman import nli
@@ -55,11 +56,11 @@ if __name__ == '__main__':
 
     gamma = 1.27e-3     # 1/W/m
     beta2 = 21.27e-27   # s^2/m
-    beta3 = 0.0344e-39   # s^3/m
-    f_ref_beta = 193.5e12  # Hz
+    beta3 = 0.0344e-39  *0 # s^3/m
+    f_ref_beta = 19.35e12  # Hz
 
     # WDM COMB PARAMETERS
-    num_channels = 91
+    num_channels = 11
     delta_f = 50e9
     pch = 0.5e-3
 
@@ -75,11 +76,11 @@ if __name__ == '__main__':
     verbose_raman = 2
 
     # NLI PARAMETERS
-    f_resolution_nli = 2e9
+    f_resolution_nli = 0.2e9
     verbose_nli = 1
-    method_nli = 'GGN_integral'
-    n_points_per_slot_min = 4
-    n_points_per_slot_max = 1000
+    method_nli = 'GGN_spectrally_separated_xpm_spm'
+    n_points_per_slot_min = 10
+    n_points_per_slot_max = 5000 
     delta_f = 50e9
     min_fwm_inv = 60
     dense_regime = namedtuple('DenseRegimeParameters',
@@ -88,8 +89,8 @@ if __name__ == '__main__':
                                 n_points_per_slot_max=n_points_per_slot_max, delta_f=delta_f, min_fwm_inv=min_fwm_inv)
 
     # FIBER
-    fiber_info = namedtuple('FiberInformation', 'length attenuation_coefficient raman_coefficient beta2 beta3 '
-                                                'f_ref_beta gamma')
+    fiber_info = namedtuple('FiberInformation', 'length attenuation_coefficient raman_coefficient '
+                                                'beta2 beta3 f_ref_beta gamma')
     attenuation_coefficient = namedtuple('AttenuationCoefficient', 'alpha_power frequency')
     raman_coefficient = namedtuple('RamanCoefficient', 'cr frequency')
 
@@ -114,7 +115,8 @@ if __name__ == '__main__':
 
     # NLI PARAMETERS
     nli_parameters = namedtuple('NLIParameters', 'method frequency_resolution verbose dense_regime')
-    model_params = nli_parameters(method=method_nli, frequency_resolution=f_resolution_nli, verbose=verbose_nli, dense_regime=dense_regime)
+    model_params = nli_parameters(method=method_nli, frequency_resolution=f_resolution_nli,
+                                  verbose=verbose_nli, dense_regime=dense_regime)
 
     raman_solver = rm.RamanSolver(fiber)
     raman_solver.spectral_information = spectrum

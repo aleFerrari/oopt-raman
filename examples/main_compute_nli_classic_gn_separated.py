@@ -1,5 +1,5 @@
 import os
-import time
+import datetime
 import csv
 import numpy as np
 from collections import namedtuple
@@ -25,19 +25,14 @@ def raman_gain_efficiency_from_csv(csv_file_name):
 
 
 def main(fiber_information, spectral_information, raman_solver, model_params, cut_list):
-    raman_solver.stimulated_raman_scattering  # Compute SRS profile
     
     nlint = nli.NLI(fiber_information=fiber_information)
     nlint.srs_profile = raman_solver
     nlint.model_parameters = model_params
 
-    start_time = time.time()
     carriers_nli = [nlint.compute_nli(carrier, *spectral_information.carriers)
                     for carrier in spectral_information.carriers
                     if carrier.channel_number in cut_list]
-    stop_time = time.time()
-    comp_time = stop_time - start_time
-    print(f'NLI computed in {comp_time} seconds')
 
     return carriers_nli
 
@@ -47,7 +42,7 @@ if __name__ == '__main__':
     # FIBER PARAMETERS
     cr_file_name = './raman_gain_efficiency/SSMF.csv'
     cr, frequency_cr = raman_gain_efficiency_from_csv(cr_file_name)
-    cr = cr
+    cr = cr *0
 
     fiber_length = np.array([75e3])
     attenuation_coefficient_p = np.array([0.046e-3])
@@ -55,11 +50,11 @@ if __name__ == '__main__':
 
     gamma = 1.27e-3     # 1/W/m
     beta2 = 21.27e-27   # s^2/m
-    beta3 = 0.0344e-39   # s^3/m
+    beta3 = 0.0344e-39 *0   # s^3/m
     f_ref_beta = 193.5e12  # Hz
 
     # WDM COMB PARAMETERS
-    num_channels = 91
+    num_channels = 11
     delta_f = 50e9
     pch = 0.5e-3
 
@@ -77,9 +72,9 @@ if __name__ == '__main__':
     # NLI PARAMETERS
     f_resolution_nli = 2e9
     verbose_nli = 1
-    method_nli = 'GGN_integral'
+    method_nli = 'GN_analytic_spectrally_separated_xpm_spm'
     n_points_per_slot_min = 4
-    n_points_per_slot_max = 1000
+    n_points_per_slot_max = 5000 
     delta_f = 50e9
     min_fwm_inv = 60
     dense_regime = namedtuple('DenseRegimeParameters',
